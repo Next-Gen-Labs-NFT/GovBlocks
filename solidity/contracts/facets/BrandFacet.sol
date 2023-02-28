@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.7;
 
 import {Modifiers} from "../libraries/LibAppStorage.sol";
 
@@ -14,11 +14,11 @@ contract BrandFacet is Modifiers {
         s.brand.metadataUri = _uri;
     }
 
-    function getBrandUri() external view returns (string) {
+    function getBrandUri() external view returns (string memory) {
         return s.brand.uri;
     }
 
-    function getBrandMetadataUri() external view returns (string) {
+    function getBrandMetadataUri() external view returns (string memory) {
         return s.brand.metadataUri;
     }
 }
