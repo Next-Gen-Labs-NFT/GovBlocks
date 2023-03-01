@@ -5,6 +5,7 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     fontSize: {
+      xxs: "0.6rem",
       xs: "0.75rem",
       sm: "0.875rem",
       base: "1rem",
@@ -17,31 +18,25 @@ module.exports = {
       "6xl": "4rem",
     },
     extend: {
+      fontFamily: {
+        sans: ['"Nunito"', "sans-serif", "Arial"],
+      },
       colors: {
-        gray: {
-          100: "#f7fafc",
-          200: "#edf2f7",
-          300: "#e2e8f0",
-          400: "#cbd5e0",
-          500: "#a0aec0",
-          600: "#718096",
-          700: "#4a5568",
-          800: "#2d3748",
-          900: "#1a202c",
-        },
-        blue: {
-          100: "#ebf8ff",
-          200: "#bee3f8",
-          300: "#90cdf4",
-          400: "#63b3ed",
-          500: "#4299e1",
-          600: "#3182ce",
-          700: "#2b6cb0",
-          800: "#2c5282",
-          900: "#2a4365",
+        primary: {
+          DEFAULT: "#3d8f89",
+          50: "#f3faf8",
+          100: "#d8efeb",
+          200: "#b0dfd8",
+          300: "#81c7bf",
+          400: "#57aaa3",
+          500: "#3d8f89",
+          600: "#2f726e",
+          700: "#295c5a",
+          800: "#244b49",
+          900: "#223f3e",
         },
       },
     },
   },
-  plugins: [require("@tailwindcss/line-clamp")],
+  plugins: [require("@tailwindcss/line-clamp"), require("daisyui")],
 };
