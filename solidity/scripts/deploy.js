@@ -67,7 +67,21 @@ async function deployDiamond() {
     throw Error(`Diamond upgrade failed: ${tx.hash}`);
   }
   console.log("Completed diamond cut");
-  return diamond.address;
+
+  // transfer ownership of contract
+  const ownership = await ethers.getContractAt('OwnershipFacet', diamond.address, contractOwner);
+  let ownershipTx;
+  let ownershipReceipt;
+
+  ownershipTx = await ownership.transferOwnership(diamond.address);
+
+  ownershipReceipt = await ownershipTx.wait();
+  if (!ownershipReceipt.status) {
+    throw Error(`Failed to assign ownership of diamond contract: ${ownershipTx.hash}`);
+  }
+  console.log("Completed transfer of ownership");
+
+  return diamond.address
 }
 
 // We recommend this pattern to be able to use async/await everywhere
