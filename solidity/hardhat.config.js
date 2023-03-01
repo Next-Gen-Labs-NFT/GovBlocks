@@ -4,18 +4,24 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
 module.exports = {
-  defaultNetwork: "mumbai",
+  defaultNetwork: "local",
   networks: {
     goerli: {
       url: "https://eth-goerli.g.alchemy.com/v2/CJ0p2QdZRojuoMvpsiQmMKiRojJXSGvP",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: ['8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d'],
     },
     mumbai: {
       url: "https://polygon-mumbai.g.alchemy.com/v2/5ARhjf605RhTL4Umk6keHUxzUu9yI9jC",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: ['8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d'],
+      gas: 2100000,
+      gasPrice: 8000000000,
+      blockGasLimit: 10000000,
     },
     local: {
       url: "http://127.0.01:8545",
+      gas: 2100000,
+      gasPrice: 8000000000,
+      blockGasLimit: 10000000,
     },
   },
   etherscan: {

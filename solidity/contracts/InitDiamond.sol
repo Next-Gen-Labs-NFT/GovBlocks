@@ -8,7 +8,7 @@ pragma solidity ^0.8.7;
 * Implementation of a diamond.
 /******************************************************************************/
 
-import {AppStorage} from "./libraries/LibAppStorage.sol";
+import {AppStorage, Membership, MembershipType} from "./libraries/LibAppStorage.sol";
 import {LibDiamond} from "./shared/libraries/LibDiamond.sol";
 import {IDiamondCut} from "./shared/interfaces/IDiamondCut.sol";
 import {IERC165} from "./shared/interfaces/IERC165.sol";
@@ -20,9 +20,18 @@ import {IERC173} from "./shared/interfaces/IERC173.sol";
 // of your diamond. Add parameters to the init function if you need to.
 
 contract InitDiamond {
+    AppStorage internal s;
+    struct Args {
+        string brandURI;
+        string brandMetadataURI;
+        MembershipType membershipType;
+        address membershipContractAddress;
+        uint256 membershipMintPrice;
+    }
+
     // You can add parameters to this function in order to pass in
     // data to set your own state variables
-    function init() external {
+    function init(Args memory _args) external {
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
@@ -30,6 +39,14 @@ contract InitDiamond {
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+        
+        s.brand.URI = _args.brandURI;
+        s.brand.metadataURI = _args.brandMetadataURI;
+        s.membershipsMap[_args.membershipContractAddress] = Membership({
+            membershipType: _args.membershipType,
+            contractAddress: _args.membershipContractAddress,
+            mintPrice: _args.membershipMintPrice
+        });
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional

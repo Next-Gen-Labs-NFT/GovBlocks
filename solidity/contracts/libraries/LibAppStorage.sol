@@ -13,29 +13,28 @@ pragma solidity 0.8.7;
 }
 */
 struct Brand {
-  string uri;
-  string metadataUri;
+    string URI;
+    string metadataURI;
 }
-
 
 struct Role {
-  string name;
-  mapping(address => bool) members;
+    string name;
+    mapping(address => bool) members;
 }
+
+enum MembershipType{ ERC721, ERC1155, ERC20, ERC5643, ERC4907, ERC5320 }
 
 struct Membership {
-  uint membershipType;
-  uint256[] tokenIds;
-  mapping(address => mapping(address => bool)) operators;
-  mapping(uint256 => address) approved;
+    MembershipType membershipType;
+    address contractAddress;
+    uint256 mintPrice;
 }
 
-
 struct VoteReceipt {
-  bool hasVoted;
-  uint256 forVotes;
-  uint256 againstVotes;
-  uint256 abstainVotes;
+    bool hasVoted;
+    uint256 forVotes;
+    uint256 againstVotes;
+    uint256 abstainVotes;
 }
 
 /*
@@ -46,46 +45,47 @@ struct VoteReceipt {
 }
 */
 struct Proposal {
-  bytes32 id;
-  address proposer;
-  string metadataUri;
-  address[] targets;
-  uint[] values;
-  string[] signatures;
-  bytes[] calldatas;
-  uint startBlock;
-  uint endBlock;
-  uint256 quorum;
-  uint256 forVotes;
-  uint256 againstVotes;
-  uint256 abstainVotes;
-  bool canceled;
-  bool executed;
-  mapping (address => VoteReceipt) receipts;
+    bytes32 id;
+    address proposer;
+    string metadataURI;
+    address[] targets;
+    uint256[] values;
+    string[] signatures;
+    bytes[] calldatas;
+    uint256 startBlock;
+    uint256 endBlock;
+    uint256 quorum;
+    uint256 forVotes;
+    uint256 againstVotes;
+    uint256 abstainVotes;
+    bool canceled;
+    bool executed;
+    mapping(address => VoteReceipt) receipts;
 }
 
 struct ParticipationToken {
-  address contractId;
-  uint256 tokenId;
-  uint256 chainId;
+    address contractId;
+    uint256 tokenId;
+    uint256 chainId;
 }
 
 struct AppStorage {
-  Brand brand;
-  mapping(bytes32 => Role) roles;
-  mapping(bytes32 => Membership) memberships;
-  mapping (uint => Proposal) proposals;
-  mapping(uint256 => ParticipationToken) participationTokens;
+    Brand brand;
+    mapping(bytes32 => Role) roles;
+    Membership[] memberships;
+    mapping(address => Membership) membershipsMap;
+    mapping(uint256 => Proposal) proposals;
+    mapping(uint256 => ParticipationToken) participationTokens;
 }
 
 library LibAppStorage {
-  function diamondStorage() internal pure returns (AppStorage storage ds) {
-      assembly {
-          ds.slot := 0
-      }
-  }
+    function diamondStorage() internal pure returns (AppStorage storage ds) {
+        assembly {
+            ds.slot := 0
+        }
+    }
 }
 
 contract Modifiers {
-  AppStorage internal s;
+    AppStorage internal s;
 }

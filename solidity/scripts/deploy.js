@@ -7,6 +7,11 @@ async function deployDiamond() {
   const accounts = await ethers.getSigners();
   const contractOwner = accounts[0];
 
+  const MembershipContract = await ethers.getContractFactory("Membership721");
+  const membershipContract = await MembershipContract.deploy('govblocks', 'https://www.govblocks.xyz/metadata', 1);
+  await membershipContract.deployed();
+  console.log("MembershipContract deployed:", membershipContract.address);
+
   // deploy DiamondCutFacet
   const DiamondCutFacet = await ethers.getContractFactory("DiamondCutFacet");
   const diamondCutFacet = await DiamondCutFacet.deploy();
@@ -27,11 +32,12 @@ async function deployDiamond() {
   // Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions
   const DiamondInit = await ethers.getContractFactory("InitDiamond");
   const diamondInit = await DiamondInit.deploy();
+  const args = [['https://www.govblocks.xyz', 'https://www.govblocks.xyz/metadata', ethers.BigNumber.from('0'), membershipContract.address, ethers.utils.parseEther('0.01')]];
   await diamondInit.deployed();
   console.log("InitDiamond deployed:", diamondInit.address);
+  const functionCall = diamondInit.interface.encodeFunctionData('init', args);
 
   // deploy facets
-  console.log("");
   console.log("Deploying facets");
   const FacetNames = [
     "DiamondLoupeFacet",
@@ -59,7 +65,6 @@ async function deployDiamond() {
   let tx;
   let receipt;
   // call to init function
-  let functionCall = diamondInit.interface.encodeFunctionData("init");
   tx = await diamondCut.diamondCut(cut, diamondInit.address, functionCall);
   console.log("Diamond cut tx: ", tx.hash);
   receipt = await tx.wait();
@@ -81,6 +86,9 @@ async function deployDiamond() {
   }
   console.log("Completed transfer of ownership");
 
+  await membershipContract.transferDefaultAdmin(diamond.address);
+
+  console.log('transferred ownership of membership contract to Diamond');
   return diamond.address
 }
 

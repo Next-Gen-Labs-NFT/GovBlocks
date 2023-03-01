@@ -4,26 +4,26 @@ pragma solidity ^0.8.7;
 import {Modifiers} from "../libraries/LibAppStorage.sol";
 
 contract BrandFacet is Modifiers {
-    event BrandUriUpdated(string uri);
-    event BrandMetadataUriUpdated(string uri);
+    event BrandURIUpdated(string URI);
+    event BrandMetadataURIUpdated(string URI);
 
-    function setBrandUri(string memory url) public {
-        s.brand.uri = url;
+    function setBrandURI(string memory _URI) public {
+        s.brand.URI = _URI;
 
-        emit BrandUriUpdated(url);
+        emit BrandURIUpdated(_URI);
     }
 
-    function setBrandMetadataUri(string memory url) public {
-        s.brand.metadataUri = url;
+    function setBrandMetadataURI(string memory _URI) public {
+        s.brand.metadataURI = _URI;
 
-        emit BrandMetadataUriUpdated(url);
+        emit BrandMetadataURIUpdated(_URI);
     }
 
-    function getBrandUri() public view returns (string memory) {
-        return s.brand.uri;
+    function getBrandURI() public view returns (string memory) {
+        return s.brand.URI;
     }
 
-    function getBrandMetadataUri() public view returns (string memory) {
-        return s.brand.metadataUri;
+    function getBrandMetadataURI() public view returns (string memory) {
+        return s.brand.metadataURI;
     }
 }
