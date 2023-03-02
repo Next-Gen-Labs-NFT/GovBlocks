@@ -8,33 +8,48 @@ module.exports = {
   networks: {
     goerli: {
       url: "https://eth-goerli.g.alchemy.com/v2/CJ0p2QdZRojuoMvpsiQmMKiRojJXSGvP",
-      accounts: ['8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d'],
+      accounts: [
+        "8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d",
+      ],
     },
     mumbai: {
       url: "https://polygon-mumbai.g.alchemy.com/v2/5ARhjf605RhTL4Umk6keHUxzUu9yI9jC",
-      accounts: ['8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d'],
-      gas: 2100000,
-      gasPrice: 8000000000,
-      blockGasLimit: 10000000,
+      accounts: [
+        "8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d",
+      ],
+    },
+    base: {
+      url: "https://wild-virulent-field.base-goerli.discover.quiknode.pro/0a78f06651c877c081a45e6681866ecf05181827/",
+      accounts: [process.env.PRIVATE_KEY],
     },
     local: {
       url: "http://127.0.01:8545",
-      gas: 2100000,
-      gasPrice: 8000000000,
-      blockGasLimit: 10000000,
     },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
   solidity: {
-    version: "0.8.7",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.8.7",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
-    },
+      {
+        version: "0.7.4",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
   },
   paths: {
     sources: "./contracts",

@@ -8,7 +8,11 @@ async function deployDiamond() {
   const contractOwner = accounts[0];
 
   const MembershipContract = await ethers.getContractFactory("Membership721");
-  const membershipContract = await MembershipContract.deploy('govblocks', 'https://www.govblocks.xyz/metadata', 1);
+  const membershipContract = await MembershipContract.deploy(
+    "govblocks",
+    "https://www.govblocks.xyz/metadata",
+    1
+  );
   await membershipContract.deployed();
   console.log("MembershipContract deployed:", membershipContract.address);
 
@@ -32,10 +36,18 @@ async function deployDiamond() {
   // Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions
   const DiamondInit = await ethers.getContractFactory("InitDiamond");
   const diamondInit = await DiamondInit.deploy();
-  const args = [['https://www.govblocks.xyz', 'https://www.govblocks.xyz/metadata', ethers.BigNumber.from('0'), membershipContract.address, ethers.utils.parseEther('0.01')]];
+  const args = [
+    [
+      "https://www.govblocks.xyz",
+      "https://www.govblocks.xyz/metadata",
+      ethers.BigNumber.from("0"),
+      membershipContract.address,
+      ethers.utils.parseEther("0.01"),
+    ],
+  ];
   await diamondInit.deployed();
   console.log("InitDiamond deployed:", diamondInit.address);
-  const functionCall = diamondInit.interface.encodeFunctionData('init', args);
+  const functionCall = diamondInit.interface.encodeFunctionData("init", args);
 
   // deploy facets
   console.log("Deploying facets");
@@ -44,6 +56,8 @@ async function deployDiamond() {
     "OwnershipFacet",
     "BrandFacet",
     "RoleFacet",
+    "MembershipFacet",
+    "GovernanceAFacet",
   ];
   const cut = [];
   for (const FacetName of FacetNames) {
@@ -74,7 +88,11 @@ async function deployDiamond() {
   console.log("Completed diamond cut");
 
   // transfer ownership of contract
-  const ownership = await ethers.getContractAt('OwnershipFacet', diamond.address, contractOwner);
+  const ownership = await ethers.getContractAt(
+    "OwnershipFacet",
+    diamond.address,
+    contractOwner
+  );
   let ownershipTx;
   let ownershipReceipt;
 
@@ -82,14 +100,16 @@ async function deployDiamond() {
 
   ownershipReceipt = await ownershipTx.wait();
   if (!ownershipReceipt.status) {
-    throw Error(`Failed to assign ownership of diamond contract: ${ownershipTx.hash}`);
+    throw Error(
+      `Failed to assign ownership of diamond contract: ${ownershipTx.hash}`
+    );
   }
   console.log("Completed transfer of ownership");
 
   await membershipContract.transferDefaultAdmin(diamond.address);
 
-  console.log('transferred ownership of membership contract to Diamond');
-  return diamond.address
+  console.log("transferred ownership of membership contract to Diamond");
+  return diamond.address;
 }
 
 // We recommend this pattern to be able to use async/await everywhere

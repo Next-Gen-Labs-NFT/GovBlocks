@@ -45,7 +45,7 @@ struct VoteReceipt {
 }
 */
 struct Proposal {
-    bytes32 id;
+    uint256 id;
     address proposer;
     string metadataURI;
     address[] targets;
@@ -61,6 +61,7 @@ struct Proposal {
     bool canceled;
     bool executed;
     mapping(address => VoteReceipt) receipts;
+    mapping(bytes32 => bool) voted;
 }
 
 struct ParticipationToken {
@@ -75,6 +76,7 @@ struct AppStorage {
     Membership[] memberships;
     mapping(address => Membership) membershipsMap;
     mapping(uint256 => Proposal) proposals;
+    uint256 proposalCount;
     mapping(uint256 => ParticipationToken) participationTokens;
 }
 
