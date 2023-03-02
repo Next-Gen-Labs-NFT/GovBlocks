@@ -6,7 +6,7 @@ pragma solidity 0.8.7;
 ///  Note: the ERC-165 identifier for this interface is 0x80ac58cd.
 /* is ERC165 */
 interface IERC721 {
-    function safeMint(address to) external;
+    function safeMint(address to) external returns (uint256);
 
     /// @notice Count all NFTs assigned to an owner
     /// @dev NFTs assigned to the zero address are considered invalid, and this

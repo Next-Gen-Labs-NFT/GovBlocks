@@ -19,11 +19,13 @@ contract Membership721 is ERC721, ERC721URIStorage, ERC721Burnable, AccessContro
         _tokenURI = _URI;
     }
 
-    function safeMint(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function safeMint(address to) public onlyRole(DEFAULT_ADMIN_ROLE) returns(uint256) {
         uint256 tokenId = _tokenIdCounter.current();
         require(tokenId < maxSupply, "Cannot mint additional tokens, maxSupply reached");
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
+        
+        return tokenId;
     }
 
     // The following functions are overrides required by Solidity.
