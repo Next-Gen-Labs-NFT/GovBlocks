@@ -7,7 +7,11 @@ class MyDocument extends Document {
   // eslint-disable-next-line class-methods-use-this
   render() {
     return (
-      <Html lang={appConfig.locale}>
+      <Html
+        className="scroll-smooth overflow-x-hidden overflow-y-scroll"
+        style={{ scrollBehavior: "smooth" }}
+        lang={appConfig.locale}
+      >
         <Head />
         <body className="bg-gray-900">
           <Main />

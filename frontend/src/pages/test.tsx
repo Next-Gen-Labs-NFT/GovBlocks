@@ -11,10 +11,11 @@ import { Main } from "@/templates/Main";
 
 import { setBrandUri } from "@/utils/web3";
 
-import { useSigner } from "wagmi";
+import { useSigner, useAccount } from "wagmi";
 
 const Index = () => {
   const { data: signer } = useSigner();
+  const { address } = useAccount();
 
   return (
     <Main
@@ -23,7 +24,7 @@ const Index = () => {
       <div>
         <button
           onClick={() => {
-            setBrandUri(signer, "https://test1");
+            setBrandUri(address, signer, "https://test1");
           }}
         >
           Set Brand URI

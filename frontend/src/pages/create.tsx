@@ -20,12 +20,19 @@ const Index = () => {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [membershipType, setMembershipType] = useState("");
+  const [governanceType, setGovernanceType] = useState("");
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
   const [primaryColor, setPrimaryColor] = useState("");
   const [logoFile, setLogoFile] = useState(null);
+
+  const [nftImage, setNftImage] = useState(null);
+  const [nftName, setNftName] = useState("");
+  const [nftDescription, setNftDescription] = useState("");
+  const [nftQuantity, setNftQuantity] = useState(0);
+  const [nftPrice, setNftPrice] = useState(0);
 
   const { data: signer } = useSigner();
 
@@ -36,6 +43,12 @@ const Index = () => {
       setCurrentStep(0);
     }
   }, [isConnected]);
+
+  const onNftImageChange = (event: any) => {
+    if (event.target.files && event.target.files[0]) {
+      setNftImage(event.target.files[0]);
+    }
+  };
 
   const steps = [
     {
@@ -62,12 +75,14 @@ const Index = () => {
       id: 5,
       name: "Participation",
     },
+    {
+      id: 6,
+      name: "Review",
+    },
   ];
 
   return (
-    <Main
-      meta={<Meta title="ETHDenver 2023 Buidlathon Bounties" description="" />}
-    >
+    <Main meta={<Meta title="Create" description="" />}>
       <>
         <div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
           <div className="w-full flex flex-row justify-between items-start gap-8">
@@ -143,6 +158,7 @@ const Index = () => {
                       onChange={(event: any) => {
                         setDescription(event.target.value);
                       }}
+                      placeholder="e.g. CityDAO's mission is to build an on-chain, community-governed, crypto city of the future."
                     />
                   </div>
 
@@ -164,13 +180,23 @@ const Index = () => {
                   </div>
 
                   <div className="w-full flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(currentStep + 1)}
-                      className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
-                    >
-                      Next
-                    </button>
+                    {name && description && url ? (
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(currentStep + 1)}
+                        className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {}}
+                        className="px-12 py-2 bg-gray-700 rounded-full text-base font-bold"
+                      >
+                        All fields are required
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -224,7 +250,7 @@ const Index = () => {
                           "p-4 h-32 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
                           membershipType == "erc721"
                             ? "border-gray-500"
-                            : "border-gray-700"
+                            : "border-gray-700 hover:border-gray-500"
                         )}
                       >
                         <div className="text-lg font-semibold">NFT</div>
@@ -236,7 +262,7 @@ const Index = () => {
                           <button
                             type="button"
                             onClick={() => setMembershipType("")}
-                            className="p-4 h-32 flex flex-col justify-center items-start text-gray-400 border border-gray-800 rounded-3xl"
+                            className="p-4 h-32 flex flex-col justify-center items-start text-gray-400 border border-gray-700 hover:border-gray-500 rounded-3xl"
                           >
                             <div className="text-base font-semibold text-left">
                               I changed my mind
@@ -290,18 +316,29 @@ const Index = () => {
 
                         <div className="w-full flex flex-col items-start justify-start space-y-2">
                           <label>Image</label>
-
-                          <Input
-                            id="name"
-                            name="name"
-                            outerClassName="w-full"
-                            className="w-full bg-transparent text-white focus:outline-none"
-                            value={name}
-                            onChange={(event: any) => {
-                              setName(event.target.value);
-                            }}
-                            placeholder="e.g. CityDAO Citizen"
-                          />
+                          {nftImage ? (
+                            <div className="flex flex-col justify-center items-start space-y-2">
+                              <img
+                                src={URL.createObjectURL(nftImage)}
+                                className="max-w-[8rem] max-h-[8rem] bg-black rounded-3xl"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setNftImage(null)}
+                                className="px-6 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ) : (
+                            <input
+                              type="file"
+                              name="nftImage"
+                              onChange={onNftImageChange}
+                              accept="image/*"
+                              className="px-6 py-2 border border-gray-700 hover:border-gray-500 rounded-full"
+                            />
+                          )}
                         </div>
 
                         <div className="w-full flex flex-col items-start justify-start space-y-2">
@@ -312,9 +349,9 @@ const Index = () => {
                             name="name"
                             outerClassName="w-full"
                             className="w-full bg-transparent text-white focus:outline-none"
-                            value={name}
+                            value={nftName}
                             onChange={(event: any) => {
-                              setName(event.target.value);
+                              setNftName(event.target.value);
                             }}
                             placeholder="e.g. CityDAO Citizen"
                           />
@@ -329,10 +366,11 @@ const Index = () => {
                             outerClassName="w-full"
                             className="w-full bg-transparent text-white focus:outline-none"
                             rows={6}
-                            value={description}
+                            value={nftDescription}
                             onChange={(event: any) => {
-                              setDescription(event.target.value);
+                              setNftDescription(event.target.value);
                             }}
+                            placeholder="e.g. Special privileges: Early access to participate in CityDAO activities like land drops, access to Citizens-only Discord channels, voting power. Does not grant ownership of land."
                           />
                         </div>
 
@@ -342,11 +380,12 @@ const Index = () => {
                           <Input
                             id="name"
                             name="name"
+                            type={"number"}
                             outerClassName="w-64"
                             className="w-full bg-transparent text-white focus:outline-none"
-                            value={name}
+                            value={nftQuantity}
                             onChange={(event: any) => {
-                              setName(event.target.value);
+                              setNftQuantity(event.target.value);
                             }}
                             placeholder="e.g. 10,000"
                           />
@@ -358,11 +397,12 @@ const Index = () => {
                           <Input
                             id="name"
                             name="name"
+                            type={"number"}
                             outerClassName="w-64"
                             className="w-full bg-transparent text-white focus:outline-none"
-                            value={name}
+                            value={nftPrice}
                             onChange={(event: any) => {
-                              setName(event.target.value);
+                              setNftPrice(event.target.value);
                             }}
                             placeholder="e.g. 0.5"
                           />
@@ -386,9 +426,9 @@ const Index = () => {
                         onClick={() => setMembershipType("erc721")}
                         className={getClassNames(
                           "p-4 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
-                          membershipType == "erc721"
+                          governanceType == "erc721"
                             ? "border-gray-500"
-                            : "border-gray-700"
+                            : "border-gray-700 hover:border-gray-500"
                         )}
                       >
                         <div className="text-lg font-semibold">NFT Votes</div>
@@ -399,10 +439,10 @@ const Index = () => {
                         type="button"
                         onClick={() => setMembershipType("erc721")}
                         className={getClassNames(
-                          "px-4 py-8 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
-                          membershipType == "erc721"
+                          "px-4 py-4 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
+                          governanceType == "erc721"
                             ? "border-gray-500"
-                            : "border-gray-700"
+                            : "border-gray-700 hover:border-gray-500"
                         )}
                       >
                         <div className="text-lg font-semibold text-left">
@@ -410,6 +450,24 @@ const Index = () => {
                         </div>
                         <div className="text-sm text-left">
                           1 NFT + 10 Participation = 2 Votes
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setMembershipType("erc721")}
+                        className={getClassNames(
+                          "px-4 py-4 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
+                          governanceType == "erc721"
+                            ? "border-gray-500"
+                            : "border-gray-700 hover:border-gray-500"
+                        )}
+                      >
+                        <div className="text-lg font-semibold text-left">
+                          Snapshot
+                        </div>
+                        <div className="text-sm text-left">
+                          Set on snapshot platform
                         </div>
                       </button>
                     </div>

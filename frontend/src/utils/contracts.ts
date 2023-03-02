@@ -1,5 +1,8 @@
 const abiBrandFacet = require("./abi/BrandFacet.json");
-const abiOwnershipFacet = require("./abi/ownershipFacet.json");
+const abiOwnershipFacet = require("./abi/OwnershipFacet.json");
+const abiMembershipFacet = require("./abi/MembershipFacet.json");
+
+const abiMembershipContract = require("./abi/MembershipContract.json");
 
 const getContracts = (chain: String) => {
   const goerli = {
@@ -24,6 +27,8 @@ const getContracts = (chain: String) => {
     diamondAddress: "",
     brandFacetAbi: abiBrandFacet,
     ownershipFacetAbi: abiOwnershipFacet,
+    membershipFacetAbi: abiMembershipFacet,
+    membershipContractAbi: abiMembershipContract,
   };
 
   const mumbai = {
@@ -45,9 +50,11 @@ const getContracts = (chain: String) => {
       },
       blockExplorerUrls: ["https://mumbai.polygonscan.com"],
     },
-    diamondAddress: "0x99A3dcDD03a4b0a48a39A1A3D75450CfCA5B229F",
+    diamondAddress: "0x09AaBA0591257E04e62DcBA9291cB40832FB3742",
     brandFacetAbi: abiBrandFacet,
     ownershipFacetAbi: abiOwnershipFacet,
+    membershipFacetAbi: abiMembershipFacet,
+    membershipContractAbi: abiMembershipContract,
   };
 
   const baseGoerli = {
@@ -72,6 +79,8 @@ const getContracts = (chain: String) => {
     diamondAddress: "0x167781424CBd2f3DdD1628ED6c30Ef42988FF0f8",
     brandFacetAbi: abiBrandFacet,
     ownershipFacetAbi: abiOwnershipFacet,
+    membershipFacetAbi: abiMembershipFacet,
+    membershipContractAbi: abiMembershipContract,
   };
 
   switch (chain) {

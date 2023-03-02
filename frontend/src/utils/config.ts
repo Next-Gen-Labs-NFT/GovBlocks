@@ -1,6 +1,6 @@
 export const appConfig = {
-  site_name: "ETHDenver 2023 Buidlathon",
-  title: "ETHDenver 2023 Buidlathon",
-  description: "",
+  site_name: "GovBlocks",
+  title: "GovBlocks",
+  description: "Build your DAO that evolves with your community",
   locale: "en",
 };
