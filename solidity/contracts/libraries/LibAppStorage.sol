@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.7;
 
+import {LibDiamond} from "../shared/libraries/LibDiamond.sol";
+
 /*
 // Brand URI = URI of their frontend interface
 // Brand Metadata URI
@@ -13,11 +15,13 @@ pragma solidity 0.8.7;
 }
 */
 struct Brand {
+    string name;
     string URI;
     string metadataURI;
 }
 
 struct Role {
+    uint256 id;
     string name;
     mapping(address => bool) members;
 }
@@ -73,21 +77,49 @@ struct Proposal {
 }
 
 struct ParticipationToken {
-    address contractId;
+    uint256 id;
+    string baseURI;
+    uint256 claimExpTimestamp;
+}
+
+struct ItemBalancesIO {
     uint256 tokenId;
-    uint256 chainId;
+    uint256 balance;
 }
 
 struct AppStorage {
+
+    mapping(uint256 => Role) roles;
+    uint256 roleCount;
+    uint256 adminRoles;
+
     Brand brand;
-    mapping(bytes32 => Role) roles;
+    uint256 adminBrand;
+    
     Membership[] memberships;
     mapping(address => Membership) membershipsMap;
+    uint256 adminMemberships;
+
     mapping(uint256 => Proposal) proposals;
     uint256 proposalCount;
     uint256 quorum;
     uint256 voteSupport;
+    uint256 adminGovernance;
+    
+    ////// Participation
     mapping(uint256 => ParticipationToken) participationTokens;
+    uint256 participationTokenCount;
+    // Mapping from token ID to account balances
+    mapping(uint256 => mapping(address => uint256)) participationBalances;
+    mapping(address => uint256[]) participationOwnerItems;
+    mapping(address => mapping(uint256 => uint256)) participationOwnerItemBalances;
+    // indexes are stored 1 higher so that 0 means no items in items array
+    mapping(address => mapping(uint256 => uint256)) participationOwnerItemIndexes;
+    // Mapping from account to operator approvals
+    mapping(address => mapping(address => bool)) participationOperatorApprovals;
+    mapping(uint256 => uint256) participationTotalSupply;
+    uint256 adminParticipation;
+    
 }
 
 library LibAppStorage {
@@ -100,4 +132,34 @@ library LibAppStorage {
 
 contract Modifiers {
     AppStorage internal s;
+
+    modifier onlyOwner() {
+        LibDiamond.enforceIsContractOwner();
+        _;
+    }
+
+    modifier onlyAdminRoles() {
+        require(s.roles[s.adminRoles].members[msg.sender], "RoleFacet: Must be admin");
+        _;
+    }
+
+    modifier onlyAdminBrand() {
+        require(s.roles[s.adminBrand].members[msg.sender], "BrandFacet: Must be admin");
+        _;
+    }
+
+    modifier onlyAdminMemberships() {
+        require(s.roles[s.adminMemberships].members[msg.sender], "MembershipFacet: Must be admin");
+        _;
+    }
+
+    modifier onlyAdminGovernance() {
+        require(s.roles[s.adminGovernance].members[msg.sender], "GovernanceFacet: Must be admin");
+        _;
+    }
+
+    modifier onlyAdminParticipation() {
+        require(s.roles[s.adminParticipation].members[msg.sender], "ParticipationFacet: Must be admin");
+        _;
+    }
 }

@@ -7,12 +7,6 @@ import {IERC721} from "../shared/interfaces/IERC721.sol";
 contract GovernanceAFacet is Modifiers {
     event VoteCast(VoteReceipt voteReciept);
 
-    enum voteOptions {
-        YES,
-        NO,
-        ABSTAIN
-    }
-
     event ProposalCreated(
         uint256 indexed id,
         address indexed proposer,
@@ -25,9 +19,23 @@ contract GovernanceAFacet is Modifiers {
         uint256 endBlockTimestamp
     );
 
-    event ExecuteTransaction(bytes32 indexed txHash, address indexed target, uint256 value, string signature, bytes data);
+    event ExecuteTransaction(
+        bytes32 indexed txHash,
+        address indexed target,
+        uint256 value,
+        string signature,
+        bytes data
+    );
 
-    event ProposalExecuted(uint128 indexed id);
+    event ProposalExecuted(
+        uint128 indexed id
+    );
+
+    enum VoteOptions {
+        YES,
+        NO,
+        ABSTAIN
+    }
 
     function propose(
         address[] memory _targets,
@@ -38,15 +46,15 @@ contract GovernanceAFacet is Modifiers {
     ) external returns (uint256) {
         require(
             _targets.length == _values.length && _targets.length == _signatures.length && _targets.length == _calldatas.length,
-            "Governance: proposal function information parity mismatch."
+            "GovernanceFacet: proposal function information parity mismatch."
         );
         // TODO: verify NFT owner
         uint256 _startBlockTimestamp = block.timestamp;
 
-        s.proposalCount++;
         uint256 newProposalId = s.proposalCount;
+        s.proposalCount++;
 
-        Proposal storage newProposal = s.proposals[s.proposalCount];
+        Proposal storage newProposal = s.proposals[newProposalId];
 
         newProposal.id = newProposalId;
         newProposal.proposer = msg.sender;
@@ -80,25 +88,31 @@ contract GovernanceAFacet is Modifiers {
         return newProposalId;
     }
 
-    function checkProposalPassed(Proposal storage _proposal) internal view {
+    function checkProposalPassed(
+        Proposal storage _proposal
+    ) internal view {
         uint256 totalVotes = _proposal.forVotes + _proposal.againstVotes;
-        require(totalVotes >= _proposal.quorum, "Governance: Vote total has not met quorum");
+        require(totalVotes >= _proposal.quorum, "GovernanceFacet: Vote total has not met quorum");
 
         uint256 requiredVotes = (_proposal.voteSupport * totalVotes) / 10000;
 
-        require(requiredVotes >= totalVotes, "Governance: Insufficient votes for proposal to pass");
+        require(requiredVotes >= totalVotes, "GovernanceFacet: Insufficient votes for proposal to pass");
     }
 
-    function isVotingFinalized(uint256 _endBlockTimestamp) internal view returns (bool) {
+    function isVotingFinalized(
+        uint256 _endBlockTimestamp
+    ) internal view returns (bool) {
         return block.timestamp >= _endBlockTimestamp;
     }
 
-    function execute(uint128 _proposalId) external payable {
+    function execute(
+        uint128 _proposalId
+    ) external payable {
         Proposal storage proposal = s.proposals[_proposalId];
 
         bool votingFinalized = isVotingFinalized(proposal.endBlockTimestamp);
 
-        require(votingFinalized == true, "Governance: Voting is still in progress");
+        require(votingFinalized == true, "GovernanceFacet: Voting is still in progress");
 
         checkProposalPassed(proposal);
 
@@ -112,12 +126,12 @@ contract GovernanceAFacet is Modifiers {
 
             // Execute action
             bytes memory callData;
-            require(bytes(proposal.signatures[i]).length != 0, "Governance: Invalid function signature.");
+            require(bytes(proposal.signatures[i]).length != 0, "GovernanceFacet: Invalid function signature.");
             callData = abi.encodePacked(bytes4(keccak256(bytes(proposal.signatures[i]))), proposal.calldatas[i]);
             // solium-disable-next-line security/no-call-value
             (bool success, ) = proposal.targets[i].call{value: proposal.values[i]}(callData);
 
-            require(success, "Governance: transaction execution reverted.");
+            require(success, "GovernanceFacet: transaction execution reverted.");
 
             emit ExecuteTransaction(txHash, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i]);
         }
@@ -125,42 +139,47 @@ contract GovernanceAFacet is Modifiers {
         emit ProposalExecuted(_proposalId);
     }
 
-    function castVote(uint128 _proposalId, voteOptions _voteOption) external {
+    function castVote(
+        uint128 _proposalId, 
+        VoteOptions _voteOption
+    ) external {
         return _castVote(msg.sender, _proposalId, _voteOption);
     }
 
     function _castVote(
         address _voter,
         uint128 _proposalId,
-        voteOptions _voteOption
+        VoteOptions _voteOption
     ) internal {
         Proposal storage proposal = s.proposals[_proposalId];
         bool votingFinalized = isVotingFinalized(proposal.endBlockTimestamp);
-        require(votingFinalized == false, "Governance: Voting has completed for this proposal.");
+        require(votingFinalized == false, "GovernanceFacet: Voting has completed for this proposal.");
 
         VoteReceipt storage receipt = proposal.receipts[_voter];
 
         // Ensure voter has not already voted
-        require(!receipt.hasVoted, "Governance: voter already voted.");
+        require(!receipt.hasVoted, "GovernanceFacet: voter already voted.");
 
         address membershipAddress = s.membershipsMap[_voter].contractAddress;
         uint256 voteCount = IERC721(membershipAddress).balanceOf(_voter);
 
-        if (_voteOption == voteOptions.YES) {
+        if (_voteOption == VoteOptions.YES) {
             // Increment the for votes in favor
             proposal.forVotes = proposal.forVotes += voteCount;
             receipt.forVotes = voteCount;
-        } else if (_voteOption == voteOptions.NO) {
+        } else if (_voteOption == VoteOptions.NO) {
             // Increment the against votes
             proposal.againstVotes = proposal.againstVotes += voteCount;
             receipt.againstVotes = voteCount;
-        } else {
+        } else if (_voteOption == VoteOptions.ABSTAIN) {
+            // Increment the abstain votes
             proposal.abstainVotes = proposal.abstainVotes += voteCount;
             receipt.abstainVotes = voteCount;
         }
 
         // Set receipt attributes based on cast vote parameters
         receipt.hasVoted = true;
+
         emit VoteCast(receipt);
     }
 }

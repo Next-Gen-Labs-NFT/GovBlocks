@@ -1,45 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import {Modifiers} from "../libraries/LibAppStorage.sol";
+import {Modifiers, Role} from "../libraries/LibAppStorage.sol";
 
 contract RoleFacet is Modifiers {
-    event RoleCreated(bytes32 roleId);
-    event RoleGranted(bytes32 roleId, address account);
-    event RoleRevoked(bytes32 roleId, address account);
+    event RoleCreated(uint256 roleId);
+    event RoleGranted(uint256 roleId, address account);
+    event RoleRevoked(uint256 roleId, address account);
 
-    function createRole(string memory name) public {
-        require(!isCreated(name), "This role has already been created");
-        bytes32 roleId = getRoleId(name);
-        s.roles[roleId].name = name;
+    function createRole(string memory _name) public {
+        
+        uint256 newroleId = s.roleCount;
 
-        emit RoleCreated(roleId);
+        Role storage newRole = s.roles[newroleId];
+        newRole.name = _name;
+
+        emit RoleCreated(newroleId);
     }
 
-    function grantRole(bytes32 roleId, address account) public {
-        require(!hasRole(roleId, account), "Role has already been granted");
-        s.roles[roleId].members[account] = true;
+    function grantRole(uint256 _id, address _account) public onlyAdminRoles {
+        require(!hasRole(_id, _account), "Role has already been granted");
+        s.roles[_id].members[_account] = true;
 
-        emit RoleGranted(roleId, account);
+        emit RoleGranted(_id, _account);
     }
 
-    function revokeRole(bytes32 roleId, address account) public {
-        require(hasRole(roleId, account), "Role has grant doesn't exist");
-        s.roles[roleId].members[account] = false;
+    function revokeRole(uint256 _id, address _account) public onlyAdminRoles {
+        require(hasRole(_id, _account), "Role has grant doesn't exist");
+        s.roles[_id].members[_account] = false;
 
-        emit RoleRevoked(roleId, account);
+        emit RoleRevoked(_id, _account);
     }
 
-    function getRoleId(string memory name) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(name));
+    function getRoleName(uint256 _id) public view returns (string memory) {
+        return s.roles[_id].name;
     }
 
-    function isCreated(string memory name) public view returns (bool) {
-        bytes32 roleId = getRoleId(name);
-        return bytes(s.roles[roleId].name).length > 0;
+    function isCreated(uint256 _id) public view returns (bool) {
+        return bytes(s.roles[_id].name).length > 0;
     }
 
-    function hasRole(bytes32 roleId, address account) public view returns (bool) {
-        return s.roles[roleId].members[account];
+    function hasRole(uint256 _id, address _account) public view returns (bool) {
+        return s.roles[_id].members[_account];
     }
 }
