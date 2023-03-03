@@ -42,7 +42,7 @@ const setBrandUri = async (address: string, signer: any, uri: string) => {
   */
 
   // console.log("Diamond Address: " + contracts.diamondAddress);
-  const membership = new ethers.Contract(
+  const govFacetA = new ethers.Contract(
     contracts.diamondAddress,
     contracts.governanceAFacetAbi,
     signer
@@ -70,7 +70,7 @@ const setBrandUri = async (address: string, signer: any, uri: string) => {
   //   'https://www.foo.bar'
   // );
 
-  const transaction = await membership.castVote(
+  const transaction = await govFacetA.castVote(
     1,
     1
   );

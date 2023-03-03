@@ -67,6 +67,8 @@ struct Proposal {
     uint256 endBlockTimestamp;
     uint256 quorum;
     uint256 voteSupport;
+    uint256 votingStreak;
+    uint256 votingStreakMultiplier;
     uint256 forVotes;
     uint256 againstVotes;
     uint256 abstainVotes;
@@ -88,24 +90,24 @@ struct ItemBalancesIO {
 }
 
 struct AppStorage {
-
     mapping(uint256 => Role) roles;
     uint256 roleCount;
     uint256 adminRoles;
-
     Brand brand;
     uint256 adminBrand;
-    
-    Membership[] memberships;
+    // Membership[] memberships;
     mapping(address => Membership) membershipsMap;
+    mapping(uint256 => address) memberships;
+    uint256 membershipCount;
     uint256 adminMemberships;
-
     mapping(uint256 => Proposal) proposals;
     uint256 proposalCount;
     uint256 quorum;
     uint256 voteSupport;
+    uint256 proposalDuration;
+    uint256 votingStreak;
+    uint256 votingStreakMultiplier;
     uint256 adminGovernance;
-    
     ////// Participation
     mapping(uint256 => ParticipationToken) participationTokens;
     uint256 participationTokenCount;
@@ -119,7 +121,6 @@ struct AppStorage {
     mapping(address => mapping(address => bool)) participationOperatorApprovals;
     mapping(uint256 => uint256) participationTotalSupply;
     uint256 adminParticipation;
-    
 }
 
 library LibAppStorage {

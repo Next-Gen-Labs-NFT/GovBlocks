@@ -27,6 +27,11 @@ contract InitDiamond {
         MembershipType membershipType;
         address membershipContractAddress;
         uint256 membershipMintPrice;
+        uint256 proposalDuration;
+        uint256 quorum;
+        uint256 voteSupport;
+        uint256 votingStreak;
+        uint256 votingStreakMultiplier;
     }
 
     // You can add parameters to this function in order to pass in
@@ -39,7 +44,7 @@ contract InitDiamond {
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
-        
+
         s.brand.URI = _args.brandURI;
         s.brand.metadataURI = _args.brandMetadataURI;
         s.membershipsMap[_args.membershipContractAddress] = Membership({
@@ -47,6 +52,13 @@ contract InitDiamond {
             contractAddress: _args.membershipContractAddress,
             mintPrice: _args.membershipMintPrice
         });
+        s.memberships[s.membershipCount] = _args.membershipContractAddress;
+        s.membershipCount++;
+        s.proposalDuration = _args.proposalDuration;
+        s.quorum = _args.quorum;
+        s.voteSupport = _args.voteSupport;
+        s.votingStreak = _args.votingStreak;
+        s.votingStreakMultiplier = _args.votingStreakMultiplier;
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional

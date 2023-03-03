@@ -19,17 +19,9 @@ contract GovernanceAFacet is Modifiers {
         uint256 endBlockTimestamp
     );
 
-    event ExecuteTransaction(
-        bytes32 indexed txHash,
-        address indexed target,
-        uint256 value,
-        string signature,
-        bytes data
-    );
+    event ExecuteTransaction(bytes32 indexed txHash, address indexed target, uint256 value, string signature, bytes data);
 
-    event ProposalExecuted(
-        uint128 indexed id
-    );
+    event ProposalExecuted(uint128 indexed id);
 
     enum VoteOptions {
         YES,
@@ -51,8 +43,8 @@ contract GovernanceAFacet is Modifiers {
         // TODO: verify NFT owner
         uint256 _startBlockTimestamp = block.timestamp;
 
-        uint256 newProposalId = s.proposalCount;
         s.proposalCount++;
+        uint256 newProposalId = s.proposalCount;
 
         Proposal storage newProposal = s.proposals[newProposalId];
 
@@ -64,9 +56,11 @@ contract GovernanceAFacet is Modifiers {
         newProposal.signatures = _signatures;
         newProposal.calldatas = _calldatas;
         newProposal.startBlockTimestamp = _startBlockTimestamp;
-        newProposal.endBlockTimestamp = _startBlockTimestamp + 1209600;
+        newProposal.endBlockTimestamp = _startBlockTimestamp + s.proposalDuration;
         newProposal.quorum = s.quorum;
         newProposal.voteSupport = s.voteSupport;
+        newProposal.votingStreak = s.votingStreak;
+        newProposal.votingStreakMultiplier = s.votingStreakMultiplier;
         newProposal.forVotes = 0;
         newProposal.againstVotes = 0;
         newProposal.abstainVotes = 0;
@@ -88,9 +82,7 @@ contract GovernanceAFacet is Modifiers {
         return newProposalId;
     }
 
-    function checkProposalPassed(
-        Proposal storage _proposal
-    ) internal view {
+    function checkProposalPassed(Proposal storage _proposal) internal view {
         uint256 totalVotes = _proposal.forVotes + _proposal.againstVotes;
         require(totalVotes >= _proposal.quorum, "GovernanceFacet: Vote total has not met quorum");
 
@@ -99,15 +91,63 @@ contract GovernanceAFacet is Modifiers {
         require(requiredVotes >= totalVotes, "GovernanceFacet: Insufficient votes for proposal to pass");
     }
 
-    function isVotingFinalized(
-        uint256 _endBlockTimestamp
-    ) internal view returns (bool) {
+    event EndsAt(uint256 _end);
+
+    function isVotingFinalized(uint256 _endBlockTimestamp) public returns (bool) {
+        emit EndsAt(_endBlockTimestamp);
         return block.timestamp >= _endBlockTimestamp;
     }
 
-    function execute(
-        uint128 _proposalId
-    ) external payable {
+    function getProposalCount() public view returns (uint256) {
+        return s.proposalCount;
+    }
+
+    function getQuorum() public view returns (uint256) {
+        return s.quorum;
+    }
+
+    function setQuorum(uint256 _quorum) public onlyOwner {
+        s.quorum = _quorum;
+    }
+
+    function getVoteSupport() public view returns (uint256) {
+        return s.voteSupport;
+    }
+
+    function setVoteSupport(uint256 _voteSupport) public onlyOwner {
+        s.voteSupport = _voteSupport;
+    }
+
+    function getProposalDuration() public view returns (uint256) {
+        return s.proposalDuration;
+    }
+
+    function setProposalDuration(uint256 _proposalDuration) public onlyOwner {
+        s.proposalDuration = _proposalDuration;
+    }
+
+    function getVotingStreak() public view returns (uint256) {
+        return s.votingStreak;
+    }
+
+    function setVotingStreak(uint256 _votingStreak) public onlyOwner {
+        s.votingStreak = _votingStreak;
+    }
+
+    function getVotingStreakMultiplier() public view returns (uint256) {
+        return s.votingStreakMultiplier;
+    }
+
+    function setVotingStreakMultiplier(uint256 _votingStreakMultiplier) public onlyOwner {
+        s.votingStreakMultiplier = _votingStreakMultiplier;
+    }
+
+    // this function is for demonstration purposes only and should be removed for production
+    function endVotingTest(uint256 _proposalId) public {
+        s.proposals[_proposalId].endBlockTimestamp = block.timestamp;
+    }
+
+    function execute(uint128 _proposalId) external payable {
         Proposal storage proposal = s.proposals[_proposalId];
 
         bool votingFinalized = isVotingFinalized(proposal.endBlockTimestamp);
@@ -139,11 +179,15 @@ contract GovernanceAFacet is Modifiers {
         emit ProposalExecuted(_proposalId);
     }
 
-    function castVote(
-        uint128 _proposalId, 
-        VoteOptions _voteOption
-    ) external {
-        return _castVote(msg.sender, _proposalId, _voteOption);
+    function getVoteCount(address _membershipContract) external view returns (uint256) {
+        return IERC721(_membershipContract).balanceOf(msg.sender);
+    }
+
+    event VoteRequest(address voter, uint128 proposalId, VoteOptions voteOption);
+
+    function castVote(uint128 _proposalId, uint128 _voteOption) external {
+        VoteOptions voteOption = VoteOptions(_voteOption);
+        return _castVote(msg.sender, _proposalId, voteOption);
     }
 
     function _castVote(
@@ -151,6 +195,7 @@ contract GovernanceAFacet is Modifiers {
         uint128 _proposalId,
         VoteOptions _voteOption
     ) internal {
+        emit VoteRequest(_voter, _proposalId, _voteOption);
         Proposal storage proposal = s.proposals[_proposalId];
         bool votingFinalized = isVotingFinalized(proposal.endBlockTimestamp);
         require(votingFinalized == false, "GovernanceFacet: Voting has completed for this proposal.");
@@ -160,8 +205,11 @@ contract GovernanceAFacet is Modifiers {
         // Ensure voter has not already voted
         require(!receipt.hasVoted, "GovernanceFacet: voter already voted.");
 
-        address membershipAddress = s.membershipsMap[_voter].contractAddress;
-        uint256 voteCount = IERC721(membershipAddress).balanceOf(_voter);
+        uint256 voteCount = 0;
+        for (uint256 i = 0; i < s.membershipCount; i++) {
+            address membershipAddress = s.memberships[i];
+            voteCount += IERC721(membershipAddress).balanceOf(_voter);
+        }
 
         if (_voteOption == VoteOptions.YES) {
             // Increment the for votes in favor

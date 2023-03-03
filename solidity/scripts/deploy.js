@@ -43,6 +43,11 @@ async function deployDiamond() {
       ethers.BigNumber.from("0"),
       membershipContract.address,
       ethers.utils.parseEther("0.01"),
+      259200000,
+      1,
+      1,
+      1,
+      1
     ],
   ];
   await diamondInit.deployed();
