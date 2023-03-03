@@ -12,56 +12,22 @@ import { TextArea } from "@/components/input/textarea";
 import { getBrandName, getBrandURI, getBrandMetadata } from "@/utils/web3";
 
 const Settings = () => {
-	const [value, setValue] = useLocalStorage("brand");
-
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
-	const [url, setUrl] = useState("");
-	const [primaryColor, setPrimaryColor] = useState("");
-	const [logoFile, setLogoFile] = useState(null);
-
-	useEffect(() => {
-		const getInitialData = async () => {
-			if (value) {
-				if ("name" in value) {
-					setName(value?.name);
-				}
-
-				if ("description" in value) {
-					setDescription(value?.description);
-				}
-			}
-
-			const brandName = await getBrandName();
-			setName(brandName);
-
-			const brandURI = await getBrandURI();
-			setUrl(brandURI);
-
-			const metadata = await getBrandMetadata();
-			console.log(metadata);
-			if (metadata) {
-				if ("description" in metadata) {
-					setDescription(metadata?.description);
-				}
-			}
-		};
-
-		getInitialData();
-	}, []);
+	const [instructions, setInstructions] = useState("");
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
 			<div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
 				<div className="pt-6 pb-4 w-full flex flex-row justify-between items-center">
 					<label className="text-xl font-semibold">
-						Brand Module
+						Create Proposal
 					</label>
 					<Link
-						href="/settings"
+						href="/dashboard"
 						className="px-6 py-2 flex justify-center items-center border border-gray-700 hover:border-gray-400 rounded-full"
 					>
-						Back to settings
+						Back to dashboard
 					</Link>
 				</div>
 				<div className="py-2 w-full flex flex-col justify-center items-start space-y-4">
@@ -95,26 +61,10 @@ const Settings = () => {
 						/>
 					</div>
 
-					<div className="flex flex-col items-start justify-start space-y-2">
-						<label>Url</label>
-						<Input
-							id="name"
-							name="name"
-							outerClassName="w-80"
-							className="w-full bg-transparent text-white font-bold focus:outline-none text-right"
-							value={url}
-							onChange={(event: any) => {
-								setUrl(event.target.value);
-							}}
-							preValue="https://"
-							postValue=".govblocks.xyz"
-						/>
-					</div>
-
 					<div className="w-full flex justify-end">
-						{name && description && url ? (
+						{name && description ? (
 							<div className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold">
-								Next
+								Submit
 							</div>
 						) : (
 							<button
