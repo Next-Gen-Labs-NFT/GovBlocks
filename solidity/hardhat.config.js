@@ -20,7 +20,7 @@ module.exports = {
     },
     base: {
       url: "https://wild-virulent-field.base-goerli.discover.quiknode.pro/0a78f06651c877c081a45e6681866ecf05181827/",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: ["8bc77c4f96001d3077addb8c478772146618281f58e39c19e165fa75d793563d"],
     },
     local: {
       url: "http://127.0.01:8545",

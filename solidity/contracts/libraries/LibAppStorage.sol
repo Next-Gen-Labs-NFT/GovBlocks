@@ -22,7 +22,14 @@ struct Role {
     mapping(address => bool) members;
 }
 
-enum MembershipType{ ERC721, ERC1155, ERC20, ERC5643, ERC4907, ERC5320 }
+enum MembershipType {
+    ERC721,
+    ERC1155,
+    ERC20,
+    ERC5643,
+    ERC4907,
+    ERC5320
+}
 
 struct Membership {
     MembershipType membershipType;
@@ -52,9 +59,10 @@ struct Proposal {
     uint256[] values;
     string[] signatures;
     bytes[] calldatas;
-    uint256 startBlock;
-    uint256 endBlock;
+    uint256 startBlockTimestamp;
+    uint256 endBlockTimestamp;
     uint256 quorum;
+    uint256 voteSupport;
     uint256 forVotes;
     uint256 againstVotes;
     uint256 abstainVotes;
@@ -77,6 +85,8 @@ struct AppStorage {
     mapping(address => Membership) membershipsMap;
     mapping(uint256 => Proposal) proposals;
     uint256 proposalCount;
+    uint256 quorum;
+    uint256 voteSupport;
     mapping(uint256 => ParticipationToken) participationTokens;
 }
 
