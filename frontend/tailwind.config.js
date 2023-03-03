@@ -38,5 +38,14 @@ module.exports = {
       },
     },
   },
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: "#3d8f89",
+        },
+      },
+    ],
+  },
   plugins: [require("@tailwindcss/line-clamp"), require("daisyui")],
 };

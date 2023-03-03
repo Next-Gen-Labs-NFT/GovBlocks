@@ -43,7 +43,7 @@ const Input = ({
       )}
     >
       {preValue && (
-        <div className="px-0 py-2 sm:py-3 text-sm sm:text-sm text-gray-200 rounded-full">
+        <div className="px-0 py-2 sm:py-3 text-gray-200 rounded-full">
           {preValue}
         </div>
       )}
@@ -69,12 +69,12 @@ const Input = ({
             : postValue
             ? "px-0 py-2 sm:py-3 "
             : "px-4 py-3 sm:py-3 rounded-full",
-          "text-sm sm:text-sm bg-transparent placeholder-gray-400 border-none focus:border-none focus:outline-none focus:placeholder-gray-400 focus:ring-0",
+          "bg-transparent placeholder-gray-400 border-none focus:border-none focus:outline-none focus:placeholder-gray-400 focus:ring-0",
           className
         )}
       />
       {postValue && (
-        <div className="px-0 py-2 sm:py-3 text-sm sm:text-sm text-gray-200 rounded-full">
+        <div className="px-0 py-2 sm:py-3 text-gray-200 rounded-full">
           {postValue}
         </div>
       )}

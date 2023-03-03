@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { Wallet } from "@/components/wallet";
+import { MenuDrop } from "@/components/menu";
 
 type IMainProps = {
   meta: ReactNode;
@@ -20,8 +21,9 @@ const Main = (props: IMainProps) => {
             <Link href="/" className="text-2xl font-semibold text-primary-200">
               GovBlocks
             </Link>
-            <div className="flex flex-row justify-end items-center">
+            <div className="flex flex-row justify-end items-center space-x-2">
               <Wallet />
+              <MenuDrop />
             </div>
           </div>
         </header>

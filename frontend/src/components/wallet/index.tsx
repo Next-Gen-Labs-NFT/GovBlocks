@@ -45,11 +45,11 @@ const Wallet = () => {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="origin-top-right absolute z-10 right-0 mt-2 p-1 shadow-xl bg-gray-900 border border-gray-800 rounded-3xl shadow-xl">
-              <div className="p-4 w-full flex flex-col justify-center items-start">
+              <div className="p-4 w-44 flex flex-col justify-center items-start">
                 <button
                   type="button"
                   onClick={() => disconnect()}
-                  className="text-base"
+                  className="font-medium hover:font-semibold text-gray-200 hover:text-white"
                 >
                   Disconnect
                 </button>
