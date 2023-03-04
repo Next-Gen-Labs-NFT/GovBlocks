@@ -171,20 +171,29 @@ contract GovernanceAFacet is Modifiers {
         proposal.executed = true;
 
         // Loop through each of the actions in the proposal
-        for (uint256 i = 0; i < proposal.targets.length; i++) {
+        // for (uint256 i = 0; i < proposal.targets.length; i++) {
+        //     bytes32 txHash = keccak256(
+        //         abi.encode(proposal.id, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i])
+        //     );
+
+        //     // Execute action
+        //     bytes memory callData;
+        //     // require(bytes(proposal.signatures[i]).length != 0, "GovernanceFacet: Invalid function signature.");
+        //     // callData = abi.encodePacked(bytes4(keccak256(bytes(proposal.signatures[i]))), proposal.calldatas[i]);
+        //     // // solium-disable-next-line security/no-call-value
+        //     // (bool success, ) = proposal.targets[i].call{value: proposal.values[i]}(callData);
+
+        //     require(success, "GovernanceFacet: transaction execution reverted.");
+
+        //     emit ExecuteTransaction(txHash, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i]);
+        // }
+        for (uint256 i = 0; i < proposal.targets.length; ++i) {
             bytes32 txHash = keccak256(
                 abi.encode(proposal.id, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i])
             );
-
-            // Execute action
-            bytes memory callData;
-            require(bytes(proposal.signatures[i]).length != 0, "GovernanceFacet: Invalid function signature.");
-            callData = abi.encodePacked(bytes4(keccak256(bytes(proposal.signatures[i]))), proposal.calldatas[i]);
-            // solium-disable-next-line security/no-call-value
-            (bool success, ) = proposal.targets[i].call{value: proposal.values[i]}(callData);
-
+            (bool success, ) = proposal.targets[i].call{value: proposal.values[i]}(proposal.calldatas[i]);
+            // Address.verifyCallResult(success, returndata, errorMessage);
             require(success, "GovernanceFacet: transaction execution reverted.");
-
             emit ExecuteTransaction(txHash, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i]);
         }
 

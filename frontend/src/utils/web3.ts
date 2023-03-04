@@ -1,33 +1,42 @@
-import { ethers, providers } from "ethers";
+import Web3 from "web3";
+import { ethers } from "ethers";
 
 import { getContracts } from "@/utils/contracts";
+import brandFacetAbi from './abi/BrandFacet.json';
+
 const contracts = getContracts("mumbai");
 
-let ethersProvider = new ethers.providers.JsonRpcProvider(contracts.rpcUrl);
-
-const getNftStorageURI = (ipfsURI: string) => {
-	const updatedIPFSURI = ipfsURI.replace(/^ipfs?:\/\//, "");
-	const nftStorageURI = "https://" + updatedIPFSURI + ".ipfs.nftstorage.link";
-
-	return nftStorageURI;
-};
-
-const getIPFSJSONData = async (ipfsURI: string) => {
-	const nftStorageURI = getNftStorageURI(ipfsURI);
-
-	const ipfsData = await fetch(nftStorageURI);
-	return await ipfsData.json();
-};
+const web3Rpc = new Web3(new Web3.providers.HttpProvider(contracts.rpcUrl));
 
 const setBrandUri = async (address: string, signer: any, uri: string) => {
-	//const web3 = new Web3(provider);
-	//console.log(web3Rpc);
-	/*
+
+  // const brand = new ethers.Contract(
+  //   contracts.diamondAddress,
+  //   contracts.brandFacetAbi,
+  //   signer
+  // );
+  // const name = await brand.getBrandName();
+  // console.log('name', name);
+  //const web3 = new Web3(provider);
+  //console.log(web3Rpc);
+  /*
   const brand = new ethers.Contract(
     contracts.diamondAddress,
     contracts.brandFacetAbi,
     signer
   );
+  console.log(await brand.getBrandURI());
+  // const brand = new ethers.Contract(
+  //   contracts.diamondAddress,
+  //   contracts.brandFacetAbi,
+  //   signer
+  // );
+  // const name = await brand.getBrandName();
+  // console.log('name', name);
+  //const web3 = new Web3(provider);
+  //console.log(web3Rpc);
+  /*
+ 
 
  
   const brand = new web3.eth.Contract(
@@ -47,117 +56,84 @@ const setBrandUri = async (address: string, signer: any, uri: string) => {
 
   console.log(await ownership.owner());
  */
-	/*
+  /*
   const transaction = await ownership.transferOwnership(
     contracts.diamondAddress
   );
   console.log(transaction);
   */
-	// console.log("Diamond Address: " + contracts.diamondAddress);
-	const govFacetA = new ethers.Contract(
-		contracts.diamondAddress,
-		contracts.governanceAFacetAbi,
-		signer
-	);
+  console.log('ABI', brandFacetAbi);
+  let iface = new ethers.utils.Interface(brandFacetAbi);
+  const callData = [iface.encodeFunctionData("setBrandName", ['foobar'])]
+  console.log('callData', callData);
+  let transaction;
+  // const membership = new ethers.Contract(
+  //   contracts.diamondAddress,
+  //   contracts.membershipFacetAbi,
+  //   signer
+  // );
+  // console.log('membership', membership);
 
-	// const transaction = await membership.safeMint(address);
-	// console.log(transaction);
 
-	console.log("Address: " + address);
+  // const options = { value: ethers.utils.parseEther("0.01") };
 
-	// const options = { value: ethers.utils.parseEther("0.01") };
-	// const transaction = await membership.mint(
-	//   "0xF9ce5E163DcA174851a06c79f19262EEd3356fdD",
-	//   address,
-	//   options
-	// );
-	// console.log(transaction);
+  // transaction = await membership.mint(
+  //   "0x23059d4308bc7EfD9c04646ca4B9f28E2B7fB530",
+  //   address,
+  //   options
+  // );
 
-	const options = {};
-	// const transaction = await membership.propose(
-	//   [],
-	//   [],
-	//   [],
-	//   [],
-	//   'https://www.foo.bar'
-	// );
+  const govFacetA = new ethers.Contract(
+    contracts.diamondAddress,
+    contracts.governanceAFacetAbi,
+    signer
+  );
 
-	const transaction = await govFacetA.castVote(1, 1);
-	console.log(transaction);
+  // transaction = await govFacetA.propose(
+  //   [contracts.diamondAddress],
+  //   [0],
+  //   ["foo"],
+  //   callData,
+  //   "https://www.foo.bar"
+  // );
 
-	// console.log("Diamond Address: " + contracts.diamondAddress);
-	const membership = new ethers.Contract(
-		contracts.diamondAddress,
-		contracts.governanceAFacetAbi,
-		signer
-	);
+  // transaction = await govFacetA.castVote(
+  //   4,
+  //   0
+  // );
+  // console.log('castVote', transaction);
+  // transaction = await govFacetA.getForVotes(4);
+  // console.log('forvotes', transaction);
 
-	// const transaction = await membership.safeMint(address);
-	// console.log(transaction);
+  // transaction = await govFacetA.getRequiredVotes(
+  //   2
+  // );
+  // console.log('forvotes', transaction);
 
-	console.log("Address: " + address);
+  // transaction = await govFacetA.getVoteCount('0x23059d4308bc7EfD9c04646ca4B9f28E2B7fB530');
+  // console.log('voteCount', transaction);
 
-	// const options = { value: ethers.utils.parseEther("0.01") };
-	// const transaction = await membership.mint(
-	//   "0xF9ce5E163DcA174851a06c79f19262EEd3356fdD",
-	//   address,
-	//   options
-	// );
-	// console.log(transaction);
 
-	const options = {};
-	// const transaction = await membership.propose(
-	//   [],
-	//   [],
-	//   [],
-	//   [],
-	//   'https://www.foo.bar'
-	// );
+  // transaction = await govFacetA.getProposalCount();
+  // console.log('proposalCount', transaction);
 
-	const transaction = await membership.castVote(1, 1);
-	console.log(transaction);
+  transaction = await govFacetA.execute(4);
+  console.log('execute tx', transaction);
 
-	// mint token
-	// create proposal
+
+
+
+  // console.log(transaction);
+
+
+
+  // transaction = await govFacetA.endVotingTest(4);
+  // console.log('endvote', transaction);
+
+
+  // transaction = await govFacetA.getVoteSupport(1);
+  // console.log('execute', transaction);
+
 };
 
-const getBrandName = async () => {
-	const brand = new ethers.Contract(
-		contracts.diamondAddress,
-		contracts.brandFacetAbi,
-		ethersProvider
-	);
-
-	return await brand.getBrandName();
-};
-
-const getBrandURI = async () => {
-	const brand = new ethers.Contract(
-		contracts.diamondAddress,
-		contracts.brandFacetAbi,
-		ethersProvider
-	);
-
-	const brandURI = await brand.getBrandURI();
-	const updatedIPFSURI = brandURI.replace(/^https?:\/\//, "");
-	return updatedIPFSURI.split(".")[0];
-};
-
-const getBrandMetadata = async () => {
-	const brand = new ethers.Contract(
-		contracts.diamondAddress,
-		contracts.brandFacetAbi,
-		ethersProvider
-	);
-
-	const brandMetadataURI = await brand.getBrandMetadataURI();
-	return await getIPFSJSONData(brandMetadataURI);
-};
-
-export {
-	getNftStorageURI,
-	setBrandUri,
-	getBrandName,
-	getBrandURI,
-	getBrandMetadata,
-};
+export { setBrandUri };
