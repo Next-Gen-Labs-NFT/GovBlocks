@@ -19,8 +19,6 @@ const DaoMain = (props: IMainProps) => {
 	const router = useRouter();
 	const [value, setValue] = useLocalStorage("brand");
 
-	console.log(value);
-
 	const [logo, setLogo] = useState(null);
 
 	useEffect(() => {
@@ -40,7 +38,6 @@ const DaoMain = (props: IMainProps) => {
 
 			const metadata = await getBrandMetadata();
 			setValue(metadata);
-			console.log(metadata);
 			if (metadata) {
 				if ("logo" in metadata) {
 					const logoURI = await getNftStorageURI(metadata?.logo);

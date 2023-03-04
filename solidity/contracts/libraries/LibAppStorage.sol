@@ -11,7 +11,6 @@ import {LibDiamond} from "../shared/libraries/LibDiamond.sol";
   "description": "CityDAO’s mission is to build an on-chain, community-governed, crypto city of the future.",
   "primary_color": "#08FFA8",
   "logo": "ipfs://"
-  "icon": "ipfs://"
 }
 */
 struct Brand {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import {Modifiers} from "../libraries/LibAppStorage.sol";
+import {Modifiers, MembershipType, Membership} from "../libraries/LibAppStorage.sol";
 import {IERC721} from "../shared/interfaces/IERC721.sol";
 
 contract MembershipFacet is Modifiers {
@@ -11,6 +11,24 @@ contract MembershipFacet is Modifiers {
         return IERC721(_contract).safeMint(_to);
         
         // TODO: Emit mint event
+    }
+
+    function getMembershipCount() public view returns (uint256) {
+        return s.membershipCount;
+    }
+
+    function getMembership(uint256 _id) public view returns (
+        MembershipType,
+        address,
+        uint256
+    ) {
+        Membership storage membership = s.membershipsMap[s.memberships[_id]];
+
+        return (
+            membership.membershipType,
+            membership.contractAddress,
+            membership.mintPrice
+        );
     }
 
     function setMaxSupply(address _contract, uint256 _maxSupply) public onlyOwner {

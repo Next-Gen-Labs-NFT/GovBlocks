@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import { useLocalStorage } from "react-use";
+import { useSigner } from "wagmi";
 
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
@@ -9,9 +10,16 @@ import { DaoMain } from "@/templates/DaoMain";
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
 
-import { getBrandName, getBrandURI, getBrandMetadata } from "@/utils/web3";
+import {
+	getBrandName,
+	getBrandURI,
+	getBrandMetadata,
+	createProposal,
+} from "@/utils/web3";
 
 const Settings = () => {
+	const { data: signer } = useSigner();
+
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
 	const [instructions, setInstructions] = useState("");
@@ -63,17 +71,22 @@ const Settings = () => {
 
 					<div className="w-full flex justify-end">
 						{name && description ? (
-							<div className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold">
-								Submit
-							</div>
-						) : (
 							<button
 								type="button"
-								onClick={() => {}}
-								className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default"
+								onClick={async () => {
+									await createProposal(signer, {
+										name,
+										description,
+									});
+								}}
+								className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
 							>
-								All fields are required
+								Submit
 							</button>
+						) : (
+							<div className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default">
+								All fields are required
+							</div>
 						)}
 					</div>
 				</div>

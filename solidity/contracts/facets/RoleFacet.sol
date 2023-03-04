@@ -32,8 +32,20 @@ contract RoleFacet is Modifiers {
         emit RoleRevoked(_id, _account);
     }
 
-    function getRoleName(uint256 _id) public view returns (string memory) {
-        return s.roles[_id].name;
+    function getRoleCount() public view returns (uint256) {
+        return s.roleCount;
+    }
+
+    function getRole(uint256 _id) public view returns (
+        uint256,
+        string memory
+    ) {
+        Role storage role = s.roles[_id];
+
+        return (
+            role.id,
+            role.name
+        );
     }
 
     function isCreated(uint256 _id) public view returns (bool) {

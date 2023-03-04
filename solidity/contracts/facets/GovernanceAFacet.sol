@@ -114,6 +114,56 @@ contract GovernanceAFacet is Modifiers {
         return s.proposalCount;
     }
 
+    function getProposal(uint256 _id) public view returns (
+        uint256,
+        address,
+        string memory,
+        uint256,
+        uint256,
+        uint256,
+        uint256,
+        uint256,
+        uint256,
+        uint256,
+        bool,
+        bool
+    ) {
+        Proposal storage proposal = s.proposals[_id];
+
+        return (
+            proposal.id,
+            proposal.proposer,
+            proposal.metadataURI,
+            proposal.startBlockTimestamp,
+            proposal.endBlockTimestamp,
+            proposal.quorum,
+            proposal.voteSupport,
+            proposal.forVotes,
+            proposal.againstVotes,
+            proposal.abstainVotes,
+            proposal.canceled,
+            proposal.executed
+        );
+    }
+
+    function getProposalExecutionData(uint256 _id) public view returns (
+        uint256,
+        address[] memory,
+        uint256[] memory,
+        string[] memory,
+        bytes[] memory
+    ) {
+        Proposal storage proposal = s.proposals[_id];
+
+        return (
+            proposal.id,
+            proposal.targets,
+            proposal.values,
+            proposal.signatures,
+            proposal.calldatas
+        );
+    }
+
     function getQuorum() public view returns (uint256) {
         return s.quorum;
     }
