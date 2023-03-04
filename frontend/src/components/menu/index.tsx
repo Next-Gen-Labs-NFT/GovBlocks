@@ -27,30 +27,30 @@ const MenuDrop = () => {
 						leaveTo="transform opacity-0 scale-95"
 					>
 						<Menu.Items className="origin-top-right absolute z-10 right-0 mt-2 p-1 shadow-xl bg-gray-900 border border-gray-800 rounded-3xl shadow-xl">
-							<div className="p-4 w-44 flex flex-col justify-center items-start space-y-2">
+							<div className="p-4 w-56 flex flex-col justify-center items-start space-y-2 font-semibold hover:font-bold">
 								<Link
 									href="/dashboard"
-									className="font-medium hover:font-semibold text-gray-200 hover:text-white"
+									className="text-gray-200 hover:text-white"
 								>
 									Dashboard
 								</Link>
 								<Link
 									href="/settings"
-									className="font-medium hover:font-semibold text-gray-200 hover:text-white"
+									className="text-gray-200 hover:text-white"
 								>
 									Settings
 								</Link>
 								<Link
 									href="/dashboard/proposals/create"
-									className="font-medium hover:font-semibold text-gray-200 hover:text-white"
+									className="text-gray-200 hover:text-white"
 								>
 									Create Proposal
 								</Link>
 								<Link
-									href="/dashboard/events/create"
-									className="font-medium hover:font-semibold text-gray-200 hover:text-white"
+									href="/dashboard/custom-badges/create"
+									className="text-gray-200 hover:text-white"
 								>
-									Create Event
+									Create Custom Badge
 								</Link>
 							</div>
 						</Menu.Items>

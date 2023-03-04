@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import { useLocalStorage } from "react-use";
+import { useSigner } from "wagmi";
 
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
@@ -9,9 +10,17 @@ import { DaoMain } from "@/templates/DaoMain";
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
 
-import { getBrandName, getBrandURI, getBrandMetadata } from "@/utils/web3";
+import {
+	getBrandName,
+	getBrandURI,
+	getBrandMetadata,
+	getBrandCalldatas,
+	createProposalWithInstructions,
+} from "@/utils/web3";
 
 const Settings = () => {
+	const { data: signer } = useSigner();
+
 	const [value, setValue] = useLocalStorage("brand");
 
 	const [name, setName] = useState("");
@@ -49,6 +58,19 @@ const Settings = () => {
 
 		getInitialData();
 	}, []);
+
+	const updateBrand = async () => {
+		const calldatas = await getBrandCalldatas(name);
+
+		createProposalWithInstructions(
+			signer,
+			{
+				name: "Branding update",
+				description: `The following branding parameters will be updated:<br /><br />Brand Name: ${name}`,
+			},
+			calldatas
+		);
+	};
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
@@ -101,21 +123,24 @@ const Settings = () => {
 							id="name"
 							name="name"
 							outerClassName="w-80"
-							className="w-full bg-transparent text-white font-bold focus:outline-none text-right"
+							className="w-full bg-transparent text-white font-bold focus:outline-none text-left"
 							value={url}
 							onChange={(event: any) => {
 								setUrl(event.target.value);
 							}}
 							preValue="https://"
-							postValue=".govblocks.xyz"
 						/>
 					</div>
 
 					<div className="w-full flex justify-end">
 						{name && description && url ? (
-							<div className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold">
+							<button
+								type="button"
+								onClick={updateBrand}
+								className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+							>
 								Next
-							</div>
+							</button>
 						) : (
 							<button
 								type="button"

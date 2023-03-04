@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useLocalStorage } from "react-use";
+import { useAccount } from "wagmi";
 
 import { Wallet } from "@/components/wallet";
 import { MenuDrop } from "@/components/menu";
@@ -17,6 +18,7 @@ type IMainProps = {
 
 const DaoMain = (props: IMainProps) => {
 	const router = useRouter();
+	const { isConnected } = useAccount();
 	const [value, setValue] = useLocalStorage("brand");
 
 	const [logo, setLogo] = useState(null);
@@ -69,8 +71,8 @@ const DaoMain = (props: IMainProps) => {
 					</div>
 				</header>
 
-				<main className="py-8 flex flex-col grow">
-					{props.children}
+				<main className="py-8 flex flex-col justify-center items-center grow">
+					{isConnected ? props.children : <Wallet bigView />}
 				</main>
 			</div>
 		</div>

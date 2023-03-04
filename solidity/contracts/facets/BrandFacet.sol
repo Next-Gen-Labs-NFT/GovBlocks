@@ -10,7 +10,6 @@ contract BrandFacet is Modifiers {
         string memory _name
     ) public onlyOwner {
         s.brand.name = _name;
-
         emit BrandUpdated();
     }
 
@@ -18,7 +17,6 @@ contract BrandFacet is Modifiers {
         string memory _URI
     ) public onlyOwner {
         s.brand.URI = _URI;
-
         emit BrandUpdated();
     }
 
@@ -26,7 +24,6 @@ contract BrandFacet is Modifiers {
         string memory _URI
     ) public onlyOwner {
         s.brand.metadataURI = _URI;
-
         emit BrandUpdated();
     }
 

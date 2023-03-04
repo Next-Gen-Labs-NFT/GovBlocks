@@ -43,8 +43,8 @@ contract GovernanceAFacet is Modifiers {
         // TODO: verify NFT owner
         uint256 _startBlockTimestamp = block.timestamp;
 
-        s.proposalCount++;
         uint256 newProposalId = s.proposalCount;
+        s.proposalCount++;
 
         Proposal storage newProposal = s.proposals[newProposalId];
 
@@ -83,12 +83,12 @@ contract GovernanceAFacet is Modifiers {
     }
 
     function checkProposalPassed(Proposal storage _proposal) internal view {
-        uint256 totalVotes = _proposal.forVotes + _proposal.againstVotes;
+        uint256 totalNonAbstainVotes = _proposal.forVotes + _proposal.againstVotes;
+        uint256 totalVotes = totalNonAbstainVotes + _proposal.abstainVotes;
         require(totalVotes >= _proposal.quorum, "GovernanceFacet: Vote total has not met quorum");
 
-        uint256 requiredVotes = (_proposal.voteSupport * totalVotes) / 10000;
-
-        require(totalVotes >= requiredVotes, "GovernanceFacet: Insufficient votes for proposal to pass");
+        uint256 requiredSupport = (_proposal.voteSupport * totalNonAbstainVotes) / 10000;
+        require(totalVotes >= requiredSupport, "GovernanceFacet: Insufficient support for proposal to pass");
     }
 
     function getRequiredVotes(uint256 _proposalId) public view returns (uint256) {
@@ -106,8 +106,19 @@ contract GovernanceAFacet is Modifiers {
         return s.proposals[_proposalId].againstVotes;
     }
 
-    function isVotingFinalized(uint256 _endBlockTimestamp) public view returns (bool) {
-        return block.timestamp >= _endBlockTimestamp;
+    function getAbstainVotes(uint256 _proposalId) public view returns (uint256) {
+        return s.proposals[_proposalId].abstainVotes;
+    }
+
+    function getTotalVotes(uint256 _proposalId) public view returns (uint256) {
+        uint256 totalVotes = s.proposals[_proposalId].forVotes + 
+                                       s.proposals[_proposalId].againstVotes +
+                                       s.proposals[_proposalId].abstainVotes;
+        return totalVotes;
+    }
+
+    function isVotingFinalized(uint256 _proposalId) public view returns (bool) {
+        return block.timestamp >= s.proposals[_proposalId].endBlockTimestamp;
     }
 
     function getProposalCount() public view returns (uint256) {
@@ -212,49 +223,27 @@ contract GovernanceAFacet is Modifiers {
     function execute(uint128 _proposalId) external payable {
         Proposal storage proposal = s.proposals[_proposalId];
 
-        bool votingFinalized = isVotingFinalized(proposal.endBlockTimestamp);
-
+        bool votingFinalized = isVotingFinalized(_proposalId);
         require(votingFinalized == true, "GovernanceFacet: Voting is still in progress");
 
         checkProposalPassed(proposal);
 
+        require(!proposal.executed, "GovernanceFacet: Proposal as already been executed");
         proposal.executed = true;
 
-        // Loop through each of the actions in the proposal
-        // for (uint256 i = 0; i < proposal.targets.length; i++) {
-        //     bytes32 txHash = keccak256(
-        //         abi.encode(proposal.id, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i])
-        //     );
-
-        //     // Execute action
-        //     bytes memory callData;
-        //     // require(bytes(proposal.signatures[i]).length != 0, "GovernanceFacet: Invalid function signature.");
-        //     // callData = abi.encodePacked(bytes4(keccak256(bytes(proposal.signatures[i]))), proposal.calldatas[i]);
-        //     // // solium-disable-next-line security/no-call-value
-        //     // (bool success, ) = proposal.targets[i].call{value: proposal.values[i]}(callData);
-
-        //     require(success, "GovernanceFacet: transaction execution reverted.");
-
-        //     emit ExecuteTransaction(txHash, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i]);
-        // }
         for (uint256 i = 0; i < proposal.targets.length; ++i) {
             bytes32 txHash = keccak256(
                 abi.encode(proposal.id, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i])
             );
+
             (bool success, ) = proposal.targets[i].call{value: proposal.values[i]}(proposal.calldatas[i]);
-            // Address.verifyCallResult(success, returndata, errorMessage);
+
             require(success, "GovernanceFacet: transaction execution reverted.");
             emit ExecuteTransaction(txHash, proposal.targets[i], proposal.values[i], proposal.signatures[i], proposal.calldatas[i]);
         }
 
         emit ProposalExecuted(_proposalId);
     }
-
-    function getVoteCount(address _membershipContract) external view returns (uint256) {
-        return IERC721(_membershipContract).balanceOf(msg.sender);
-    }
-
-    event VoteRequest(address voter, uint128 proposalId, VoteOptions voteOption);
 
     function castVote(uint128 _proposalId, uint128 _voteOption) external {
         VoteOptions voteOption = VoteOptions(_voteOption);
@@ -266,9 +255,8 @@ contract GovernanceAFacet is Modifiers {
         uint128 _proposalId,
         VoteOptions _voteOption
     ) internal {
-        emit VoteRequest(_voter, _proposalId, _voteOption);
         Proposal storage proposal = s.proposals[_proposalId];
-        bool votingFinalized = isVotingFinalized(proposal.endBlockTimestamp);
+        bool votingFinalized = isVotingFinalized(_proposalId);
         require(votingFinalized == false, "GovernanceFacet: Voting has completed for this proposal.");
 
         VoteReceipt storage receipt = proposal.receipts[_voter];
@@ -281,6 +269,8 @@ contract GovernanceAFacet is Modifiers {
             address membershipAddress = s.memberships[i];
             voteCount += IERC721(membershipAddress).balanceOf(_voter);
         }
+
+        require(voteCount > 0, "GovernanceFacet: You don't have any governance tokens");
 
         if (_voteOption == VoteOptions.YES) {
             // Increment the for votes in favor

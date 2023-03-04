@@ -24,6 +24,7 @@
 		"@web3modal/react": "^2.1.1",
 		"daisyui": "^2.51.2",
 		"ethers": "^5",
+		"magic-sdk": "^13.5.0",
 		"next": "^13.1.6",
 		"next-seo": "^5.15.0",
 		"nft.storage": "^7.0.3",

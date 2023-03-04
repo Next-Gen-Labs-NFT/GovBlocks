@@ -17,7 +17,7 @@ import {
 	createProposal,
 } from "@/utils/web3";
 
-const Settings = () => {
+const Create = () => {
 	const { data: signer } = useSigner();
 
 	const [name, setName] = useState("");
@@ -95,4 +95,4 @@ const Settings = () => {
 	);
 };
 
-export default Settings;
+export default Create;

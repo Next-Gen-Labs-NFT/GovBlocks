@@ -7,6 +7,8 @@ pragma solidity 0.8.7;
 /* is ERC165 */
 interface IERC721 {
     function safeMint(address _to) external returns (uint256);
+
+    function maxSupply() external view returns (uint256);
     function setMaxSupply(uint256 _maxSupply) external;
 
     /// @notice Count all NFTs assigned to an owner

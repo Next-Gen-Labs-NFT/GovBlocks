@@ -292,14 +292,13 @@ const Index = () => {
 											id="name"
 											name="name"
 											outerClassName="w-80"
-											className="w-full bg-transparent text-white font-bold focus:outline-none text-right"
+											className="w-full bg-transparent text-white font-bold focus:outline-none text-left"
 											value={url}
 											onChange={(event: any) => {
 												setUrl(event.target.value);
 											}}
 											placeholder="e.g. citydao"
 											preValue="https://"
-											postValue=".govblocks.xyz"
 										/>
 									</div>
 

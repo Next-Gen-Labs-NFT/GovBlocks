@@ -31,12 +31,22 @@ contract MembershipFacet is Modifiers {
         );
     }
 
+    function getMaxSupply(address _contract) public view returns (uint256) {
+        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        return IERC721(_contract).maxSupply();
+    }
+
     function setMaxSupply(address _contract, uint256 _maxSupply) public onlyOwner {
         require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
         IERC721(_contract).setMaxSupply(_maxSupply);
     }
 
-    function setPrice(address _contract, uint256 _price) public onlyOwner {
+    function getMintPrice(address _contract) public view returns (uint256) {
+        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        return s.membershipsMap[_contract].mintPrice;
+    }
+
+    function setMintPrice(address _contract, uint256 _price) public onlyOwner {
         require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
         s.membershipsMap[_contract].mintPrice = _price;
     }

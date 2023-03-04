@@ -198,8 +198,8 @@ const getBrandURI = async () => {
 	);
 
 	const brandURI = await brand.getBrandURI();
-	const updatedIPFSURI = brandURI.replace(/^https?:\/\//, "");
-	return updatedIPFSURI.split(".")[0];
+	const updatedURI = brandURI.replace(/^https?:\/\//, "");
+	return updatedURI;
 };
 
 const getBrandMetadata = async () => {
@@ -213,10 +213,90 @@ const getBrandMetadata = async () => {
 	return await getIPFSJSONData(brandMetadataURI);
 };
 
+const getBrandCalldatas = async (name: string) => {
+	const brand = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.brandFacetAbi,
+		ethersProvider
+	);
+
+	console.log(name);
+
+	const calldatas = [];
+
+	calldatas.push(brand.interface.encodeFunctionData("setBrandName", [name]));
+
+	return calldatas;
+};
+
 const getRoles = async () => {};
 
+const getMembershipNFTImage = async () => {
+	const membership = new ethers.Contract(
+		contracts.membershipAddress,
+		contracts.membershipContractAbi,
+		ethersProvider
+	);
+
+	const membershipMetadata = await getIPFSJSONData(
+		await membership.tokenURI(0)
+	);
+	const nftImage = await getNftStorageURI(membershipMetadata.image);
+	return nftImage;
+};
+
+const getMembershipMintPrice = async () => {
+	const membership = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.membershipFacetAbi,
+		ethersProvider
+	);
+
+	const mintPrice = await membership.getMintPrice(
+		contracts.membershipAddress
+	);
+
+	return ethers.utils.formatEther(mintPrice);
+};
+
+const getMembershipMaxSupply = async () => {
+	const membership = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.membershipFacetAbi,
+		ethersProvider
+	);
+
+	const maxSupply = await membership.getMaxSupply(
+		contracts.membershipAddress
+	);
+	return maxSupply.toNumber();
+};
+
+const getMembershipTotalSupply = async () => {
+	const membership = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.membershipFacetAbi,
+		ethersProvider
+	);
+
+	const totalSupply = await membership.getMaxSupply(
+		contracts.membershipAddress
+	);
+	return totalSupply.toNumber();
+};
+
+const mintMembership = async (signer: any, address: any) => {
+	const membership = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.membershipFacetAbi,
+		signer
+	);
+
+	const options = { value: ethers.utils.parseEther("0.01") };
+	await membership.mint(contracts.membershipAddress, address, options);
+};
+
 const getProposals = async (proposalCount: number) => {
-	console.log(proposalCount);
 	const governance = new ethers.Contract(
 		contracts.diamondAddress,
 		contracts.governanceAFacetAbi,
@@ -224,12 +304,24 @@ const getProposals = async (proposalCount: number) => {
 	);
 
 	const proposals = [];
-	for (let i = 0; i < proposalCount; i++) {
+	for (let i = 1; i <= proposalCount; i++) {
 		const proposal = await governance.getProposal(i);
 		proposals.push(proposal);
 	}
 
 	return proposals;
+};
+
+const getProposal = async (proposalId: number) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const proposal = await governance.getProposal(proposalId);
+	console.log(proposal);
+	return proposal;
 };
 
 const getProposalCount = async () => {
@@ -251,7 +343,62 @@ const createProposal = async (signer: any, content: any) => {
 	);
 
 	const metadataURI = await uploadContent(content);
+	console.log(metadataURI);
 	await governance.propose([], [], [], [], metadataURI);
+};
+
+const createProposalWithInstructions = async (
+	signer: any,
+	content: any,
+	calldatas: any[]
+) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		signer
+	);
+
+	const metadataURI = await uploadContent(content);
+	console.log(metadataURI);
+
+	const targets = [];
+	const values = [];
+	const signatures = [];
+
+	console.log(calldatas);
+	for (const calldata of calldatas) {
+		targets.push(contracts.diamondAddress);
+		values.push(0);
+		signatures.push("");
+	}
+
+	await governance.propose(
+		targets,
+		values,
+		signatures,
+		calldatas,
+		metadataURI
+	);
+};
+
+const castVote = async (signer: any, proposalId: number, vote: number) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		signer
+	);
+
+	await governance.castVote(proposalId, vote);
+};
+
+const endVotingTest = async (signer: any, proposalId: number) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		signer
+	);
+
+	await governance.endVotingTest(proposalId);
 };
 
 const getVoteSupport = async () => {};
@@ -264,11 +411,37 @@ const getVotingStreak = async () => {};
 
 const getVotingStreakMultiplier = async () => {};
 
-const endVotingTest = async () => {};
+const isVotingFinalized = async (proposalId: number) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
 
-const executeProposal = async () => {};
+	await governance.isVotingFinalized(proposalId);
+};
 
-const getVoteCount = async () => {};
+const executeProposal = async (signer: any, proposalId: number) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		signer
+	);
+
+	await governance.execute(proposalId);
+};
+
+const getVoteCount = async (proposalId: number) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const voteCount = await governance.getTotalVotes(proposalId);
+	console.log(voteCount);
+	return voteCount.toNumber();
+};
 
 export {
 	getNftStorageURI,
@@ -276,16 +449,25 @@ export {
 	getBrandName,
 	getBrandURI,
 	getBrandMetadata,
+	getBrandCalldatas,
 	getRoles,
+	getMembershipNFTImage,
+	getMembershipMintPrice,
+	getMembershipMaxSupply,
+	getMembershipTotalSupply,
+	mintMembership,
 	getProposals,
+	getProposal,
 	getProposalCount,
 	createProposal,
+	createProposalWithInstructions,
+	castVote,
+	endVotingTest,
 	getVoteSupport,
 	getQuorum,
 	getProposalDuration,
 	getVotingStreak,
 	getVotingStreakMultiplier,
-	endVotingTest,
 	executeProposal,
 	getVoteCount,
 };
