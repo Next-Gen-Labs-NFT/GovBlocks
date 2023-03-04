@@ -90,7 +90,7 @@ const getBrandCalldatas = async (name: string, description: string) => {
 	return calldatas;
 };
 
-const getRoles = async () => {};
+const getRoles = async () => { };
 
 const getMembershipNFTImage = async () => {
 	const membership = new ethers.Contract(
@@ -298,15 +298,23 @@ const endVotingTest = async (signer: any, proposalId: number) => {
 	await governance.endVotingTest(proposalId);
 };
 
-const getVoteSupport = async () => {};
+const getVoteSupport = async () => { };
 
-const getQuorum = async () => {};
+const getQuorum = async () => { };
 
-const getProposalDuration = async () => {};
+const getProposalDuration = async () => { };
 
-const getVotingStreak = async () => {};
+const getUserVotingStreak = async (address: string) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
 
-const getVotingStreakMultiplier = async () => {};
+	await governance.getUserVotingStreak(address);
+};
+
+const getVotingStreakMultiplier = async () => { };
 
 const isVotingFinalized = async (proposalId: number) => {
 	const governance = new ethers.Contract(
@@ -368,6 +376,6 @@ export {
 	getRoles,
 	getVoteCount,
 	getVoteSupport,
-	getVotingStreak,
+	getUserVotingStreak,
 	getVotingStreakMultiplier,
 };

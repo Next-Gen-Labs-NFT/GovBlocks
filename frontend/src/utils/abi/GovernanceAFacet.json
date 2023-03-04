@@ -146,31 +146,6 @@
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "voter",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint128",
-				"name": "proposalId",
-				"type": "uint128"
-			},
-			{
-				"indexed": false,
-				"internalType": "enum GovernanceAFacet.VoteOptions",
-				"name": "voteOption",
-				"type": "uint8"
-			}
-		],
-		"name": "VoteRequest",
-		"type": "event"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint128",
@@ -465,11 +440,11 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_membershipContract",
+				"name": "_voter",
 				"type": "address"
 			}
 		],
-		"name": "getVoteCount",
+		"name": "getUserVotingStreak",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -483,6 +458,25 @@
 	{
 		"inputs": [],
 		"name": "getVoteSupport",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_voter",
+				"type": "address"
+			}
+		],
+		"name": "getVotingPower",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -523,7 +517,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_endBlockTimestamp",
+				"name": "_proposalId",
 				"type": "uint256"
 			}
 		],

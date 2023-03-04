@@ -111,9 +111,7 @@ contract GovernanceAFacet is Modifiers {
     }
 
     function getTotalVotes(uint256 _proposalId) public view returns (uint256) {
-        uint256 totalVotes = s.proposals[_proposalId].forVotes + 
-                                       s.proposals[_proposalId].againstVotes +
-                                       s.proposals[_proposalId].abstainVotes;
+        uint256 totalVotes = s.proposals[_proposalId].forVotes + s.proposals[_proposalId].againstVotes + s.proposals[_proposalId].abstainVotes;
         return totalVotes;
     }
 
@@ -125,20 +123,24 @@ contract GovernanceAFacet is Modifiers {
         return s.proposalCount;
     }
 
-    function getProposal(uint256 _id) public view returns (
-        uint256,
-        address,
-        string memory,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        bool,
-        bool
-    ) {
+    function getProposal(uint256 _id)
+        public
+        view
+        returns (
+            uint256,
+            address,
+            string memory,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            bool,
+            bool
+        )
+    {
         Proposal storage proposal = s.proposals[_id];
 
         return (
@@ -157,22 +159,20 @@ contract GovernanceAFacet is Modifiers {
         );
     }
 
-    function getProposalExecutionData(uint256 _id) public view returns (
-        uint256,
-        address[] memory,
-        uint256[] memory,
-        string[] memory,
-        bytes[] memory
-    ) {
+    function getProposalExecutionData(uint256 _id)
+        public
+        view
+        returns (
+            uint256,
+            address[] memory,
+            uint256[] memory,
+            string[] memory,
+            bytes[] memory
+        )
+    {
         Proposal storage proposal = s.proposals[_id];
 
-        return (
-            proposal.id,
-            proposal.targets,
-            proposal.values,
-            proposal.signatures,
-            proposal.calldatas
-        );
+        return (proposal.id, proposal.targets, proposal.values, proposal.signatures, proposal.calldatas);
     }
 
     function getQuorum() public view returns (uint256) {
@@ -221,8 +221,37 @@ contract GovernanceAFacet is Modifiers {
             address membershipAddress = s.memberships[i];
             voteCount += IERC721(membershipAddress).balanceOf(_voter);
         }
+        // get streak
+        // if streak >=
+        uint256 votingStreak = getUserVotingStreak(_voter);
+        if (votingStreak >= s.votingStreak) {
+            voteCount = voteCount * s.votingStreakMultiplier;
+        }
 
         return voteCount;
+    }
+
+    function getUserVotingStreak(address _voter) public view returns (uint256) {
+        uint256 streak = 0;
+        uint256 closedProposalsCount = 0;
+
+        for (uint256 i = s.proposalCount; i > 0; i--) {
+            Proposal storage proposal = s.proposals[i];
+            bool hasVoted = proposal.receipts[_voter].hasVoted;
+
+            if (proposal.endBlockTimestamp <= block.timestamp) {
+                if (!hasVoted) {
+                    break;
+                }
+                closedProposalsCount++;
+                streak++;
+            }
+
+            if (closedProposalsCount > s.votingStreak) {
+                break;
+            }
+        }
+        return streak;
     }
 
     // this function is for demonstration purposes only and should be removed for production
@@ -274,7 +303,6 @@ contract GovernanceAFacet is Modifiers {
         // Ensure voter has not already voted
         require(!receipt.hasVoted, "GovernanceFacet: voter already voted.");
 
-        
         uint256 voteCount = getVotingPower(_voter);
         require(voteCount > 0, "GovernanceFacet: You don't have any governance tokens");
 

@@ -15,6 +15,7 @@ import {
 	getMembershipTotalSupply,
 	getProposalCount,
 	getProposals,
+	getUserVotingStreak,
 	mintMembership,
 	getMembershipNFTs,
 } from "@/utils/web3";
@@ -32,6 +33,7 @@ const Dashboard = () => {
 	const [proposalCount, setProposalCount] = useState<any>(0);
 	const [proposals, setProposals] = useState<any>(null);
 	const [proposalsMetadata, setProposalsMetadata] = useState<any>(null);
+	const [votingStreak, setUserVotingStreak] = useState<any>(0);
 
 	useEffect(() => {
 		const getInitialData = async () => {
@@ -40,6 +42,7 @@ const Dashboard = () => {
 			setMembershipMaxSupply(await getMembershipMaxSupply());
 			setMembershipTotalSupply(await getMembershipTotalSupply());
 			setMembershipsOwned(await getMembershipNFTs(address));
+			setUserVotingStreak(await getUserVotingStreak(address));
 
 			const newProposalCount = await getProposalCount();
 			setProposalCount(newProposalCount);
@@ -120,7 +123,7 @@ const Dashboard = () => {
 								</div>
 								<div className="py-4 flex flex-col items-center">
 									<span className="text-3xl">
-										{membershipsOwned}
+										{votingStreak}
 									</span>
 									Voting Power
 								</div>

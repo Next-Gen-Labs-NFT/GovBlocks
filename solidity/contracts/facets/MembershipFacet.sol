@@ -6,10 +6,10 @@ import {IERC721} from "../shared/interfaces/IERC721.sol";
 
 contract MembershipFacet is Modifiers {
     function mint(address _contract, address _to) public payable returns (uint256) {
-        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         require(msg.value >= s.membershipsMap[_contract].mintPrice, "Insufficient funds sent");
         return IERC721(_contract).safeMint(_to);
-        
+
         // TODO: Emit mint event
     }
 
@@ -17,37 +17,42 @@ contract MembershipFacet is Modifiers {
         return s.membershipCount;
     }
 
-    function getMembership(uint256 _id) public view returns (
-        MembershipType,
-        address,
-        uint256
-    ) {
+    function getMembership(uint256 _id)
+        public
+        view
+        returns (
+            MembershipType,
+            address,
+            uint256
+        )
+    {
         Membership storage membership = s.membershipsMap[s.memberships[_id]];
 
-        return (
-            membership.membershipType,
-            membership.contractAddress,
-            membership.mintPrice
-        );
+        return (membership.membershipType, membership.contractAddress, membership.mintPrice);
     }
 
     function getMaxSupply(address _contract) public view returns (uint256) {
-        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         return IERC721(_contract).maxSupply();
     }
 
     function setMaxSupply(address _contract, uint256 _maxSupply) public onlyOwner {
-        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         IERC721(_contract).setMaxSupply(_maxSupply);
     }
 
     function getMintPrice(address _contract) public view returns (uint256) {
-        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         return s.membershipsMap[_contract].mintPrice;
     }
 
+    function getTotalSupply(address _contract) public returns (uint256) {
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
+        return IERC721(_contract).getTotalSupply();
+    }
+
     function setMintPrice(address _contract, uint256 _price) public onlyOwner {
-        require(_contract == s.membershipsMap[_contract].contractAddress,"Invalid contract");
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         s.membershipsMap[_contract].mintPrice = _price;
     }
 }
