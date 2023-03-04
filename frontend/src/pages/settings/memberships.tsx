@@ -1,17 +1,51 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSigner } from "wagmi";
 
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
+import {
+	createProposalWithInstructions,
+	getMembershipCalldatas,
+	getMembershipMaxSupply,
+	getMembershipMintPrice,
+	getMembershipNFTImage,
+	getMembershipTotalSupply,
+} from "@/utils/web3";
 
 const Settings = () => {
-	const [name, setName] = useState<any>("");
-	const [description, setDescription] = useState<any>("");
-	const [url, setUrl] = useState<any>("");
-	const [primaryColor, setPrimaryColor] = useState<any>("");
-	const [logoFile, setLogoFile] = useState<any>(null);
+	const { data: signer } = useSigner();
+
+	const [nftImage, setNftImage] = useState<any>(null);
+	const [nftName, setNftName] = useState<any>("");
+	const [nftDescription, setNftDescription] = useState<any>("");
+	const [nftQuantity, setNftQuantity] = useState<any>(0);
+	const [nftPrice, setNftPrice] = useState<any>(0);
+
+	useEffect(() => {
+		const getInitialData = async () => {
+			setNftImage(await getMembershipNFTImage());
+			setNftPrice(await getMembershipMintPrice());
+			setNftQuantity(await getMembershipMaxSupply());
+		};
+
+		getInitialData();
+	}, []);
+
+	const updateMembership = async () => {
+		const calldatas = await getMembershipCalldatas(nftQuantity, nftPrice);
+
+		createProposalWithInstructions(
+			signer,
+			{
+				name: "Membership update",
+				description: `The following membership parameters will be updated:<br /><br />Total Quantity: ${nftQuantity}<br /><br />Price: ${nftPrice}`,
+			},
+			calldatas
+		);
+	};
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
@@ -28,68 +62,83 @@ const Settings = () => {
 					</Link>
 				</div>
 				<div className="py-2 w-full flex flex-col justify-center items-start space-y-4">
-					<div className="w-full flex flex-col items-start justify-start space-y-2">
-						<label>Name</label>
+					<div className="pt-8 w-full flex flex-col justify-start items-start space-y-4">
+						<div className="w-full flex flex-col items-start justify-start space-y-2">
+							<label>Image</label>
+							{nftImage && (
+								<div className="flex flex-col justify-center items-start space-y-2">
+									<img
+										src={nftImage}
+										className="max-w-[16rem] max-h-[16rem] bg-black rounded-3xl"
+									/>
+								</div>
+							)}
+						</div>
 
-						<Input
-							id="name"
-							name="name"
-							outerClassName="w-full"
-							className="w-full bg-transparent text-white focus:outline-none"
-							value={name}
-							onChange={(event: any) => {
-								setName(event.target.value);
-							}}
-							placeholder="e.g. CityDAO"
-						/>
+						<div className="w-full flex flex-col items-start justify-start space-y-2">
+							<label>Name</label>
+							<div className="">{nftName}</div>
+						</div>
+
+						<div className="w-full flex flex-col items-start justify-start space-y-2">
+							<label>Description</label>
+							<div className="">{nftDescription}</div>
+						</div>
+
+						<div className="w-full flex flex-col items-start justify-start space-y-2">
+							<label>Update Quantity</label>
+
+							<Input
+								id="name"
+								name="name"
+								type={"number"}
+								outerClassName="w-64"
+								className="w-full bg-transparent text-white focus:outline-none"
+								value={nftQuantity}
+								onChange={(event: any) => {
+									setNftQuantity(event.target.value);
+								}}
+								placeholder="e.g. 10,000"
+							/>
+						</div>
+
+						<div className="w-full flex flex-col items-start justify-start space-y-2">
+							<label>Update Price</label>
+
+							<Input
+								id="name"
+								name="name"
+								type={"number"}
+								outerClassName="w-64"
+								className="w-full bg-transparent text-white focus:outline-none"
+								value={nftPrice}
+								onChange={(event: any) => {
+									setNftPrice(event.target.value);
+								}}
+								placeholder="e.g. 10,000"
+							/>
+						</div>
 					</div>
 
-					<div className="w-full flex flex-col items-start justify-start space-y-2">
-						<label>Description</label>
-						<TextArea
-							id="description"
-							name="description"
-							outerClassName="w-full"
-							className="w-full bg-transparent text-white focus:outline-none"
-							rows={6}
-							value={description}
-							onChange={(event: any) => {
-								setDescription(event.target.value);
-							}}
-							placeholder="e.g. CityDAO's mission is to build an on-chain, community-governed, crypto city of the future."
-						/>
-					</div>
-
-					<div className="flex flex-col items-start justify-start space-y-2">
-						<label>Url</label>
-						<Input
-							id="name"
-							name="name"
-							outerClassName="w-80"
-							className="w-full bg-transparent text-white font-bold focus:outline-none text-right"
-							value={url}
-							onChange={(event: any) => {
-								setUrl(event.target.value);
-							}}
-							placeholder="e.g. citydao"
-							preValue="https://"
-							postValue=".govblocks.xyz"
-						/>
+					<div className="pt-8">
+						<div className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default">
+							Add new membership (Coming soon)
+						</div>
 					</div>
 
 					<div className="w-full flex justify-end">
-						{name && description && url ? (
-							<div className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold">
-								Next
-							</div>
-						) : (
+						{nftQuantity && nftPrice ? (
 							<button
 								type="button"
-								onClick={() => {}}
-								className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default"
+								onClick={updateMembership}
+								className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
 							>
-								All fields are required
+								Update
 							</button>
+						) : (
+							<div className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default">
+								All fields are required
+							</div>
 						)}
 					</div>
 				</div>

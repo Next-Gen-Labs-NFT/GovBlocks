@@ -23,6 +23,12 @@ const Index = () => {
 	const [primaryColor, setPrimaryColor] = useState<any>("");
 	const [logoFile, setLogoFile] = useState<any>(null);
 
+	const [roles, setRoles] = useState<any>([]);
+	const [roleName, setRoleName] = useState<any>("");
+	const [walletRoles, setWalletRoles] = useState<any>([]);
+	const [walletRoleName, setWalletRoleName] = useState<any>("");
+	const [roleAddress, setRoleAddress] = useState<any>("");
+
 	const [nftImage, setNftImage] = useState<any>(null);
 	const [nftName, setNftName] = useState<any>("");
 	const [nftDescription, setNftDescription] = useState<any>("");
@@ -46,6 +52,12 @@ const Index = () => {
 		governanceNoVoteStreakMonetaryPenalty,
 		setGovernanceNoVoteStreakMonetaryPenalty,
 	] = useState<any>(0);
+
+	useEffect(() => {
+		if (roles.length == 1) {
+			setWalletRoleName(roles[0].name);
+		}
+	}, [roles]);
 
 	const { data: signer } = useSigner();
 
@@ -195,8 +207,7 @@ const Index = () => {
         "Based on just NFTs and Tokens & participation in the community",
       active: true,
     },
-    */
-
+  */
 	return (
 		<Main meta={<Meta title="Create" description="" />}>
 			<>
@@ -284,18 +295,18 @@ const Index = () => {
 										/>
 									</div>
 
-									<div className="flex flex-col items-start justify-start space-y-2">
+									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label>Url</label>
 										<Input
 											id="name"
 											name="name"
-											outerClassName="w-80"
+											outerClassName="w-full"
 											className="w-full bg-transparent text-white font-bold focus:outline-none text-left"
 											value={url}
 											onChange={(event: any) => {
 												setUrl(event.target.value);
 											}}
-											placeholder="e.g. citydao"
+											placeholder="e.g. citydao.io or governance.citydao.io"
 											preValue="https://"
 										/>
 									</div>
@@ -306,7 +317,7 @@ const Index = () => {
 												type="button"
 												onClick={() =>
 													setCurrentStep(
-														currentStep + 2
+														currentStep + 1
 													)
 												}
 												className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
@@ -329,33 +340,155 @@ const Index = () => {
 							{currentStep == 2 && (
 								<>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
-										<label>Address</label>
+										<label>Role Name</label>
 										<Input
 											id="address"
 											name="address"
 											outerClassName="w-full"
 											className="w-full bg-transparent text-white focus:outline-none"
-											value={name}
+											value={roleName}
 											onChange={(event: any) => {
-												setName(event.target.value);
+												setRoleName(event.target.value);
 											}}
-											placeholder="e.g. 0xfdc148069AB770f56b762b508384d515583576a8"
+											placeholder="e.g. Super Admin or Guild Leader"
 										/>
 									</div>
 
-									<div className="w-full flex flex-col items-start justify-start space-y-2">
-										<label>Address</label>
-										<Input
-											id="address"
-											name="address"
-											outerClassName="w-full"
-											className="w-full bg-transparent text-white focus:outline-none"
-											value={name}
-											onChange={(event: any) => {
-												setName(event.target.value);
-											}}
-											placeholder="e.g. 0xfdc148069AB770f56b762b508384d515583576a8"
-										/>
+									<button
+										type="button"
+										onClick={() => {
+											setRoles([
+												...roles,
+												{
+													name: roleName,
+												},
+											]);
+											setRoleName("");
+										}}
+										className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+									>
+										Create Role
+									</button>
+
+									{roles && roles.length > 0 && (
+										<>
+											<div className="pt-8 w-full flex flex-col items-start justify-start space-y-2">
+												<label>Role</label>
+												<select
+													name="role"
+													id="role"
+													onChange={(event: any) => {
+														setWalletRoleName(
+															roles[
+																event.target
+																	.value
+															].name
+														);
+													}}
+													className="px-6 py-3 bg-transparent placeholder-gray-400 border border-gray-700 focus:outline-none focus:placeholder-gray-400 focus:ring-0 rounded-full"
+												>
+													{roles.map(
+														(
+															role: any,
+															index: number
+														) => (
+															<option
+																key={index}
+																value={index}
+															>
+																{role.name}
+															</option>
+														)
+													)}
+												</select>
+											</div>
+											<div className="w-full flex flex-col items-start justify-start space-y-2">
+												<label>Address</label>
+												<Input
+													id="address"
+													name="address"
+													outerClassName="w-full"
+													className="w-full bg-transparent text-white focus:outline-none"
+													value={roleAddress}
+													onChange={(event: any) => {
+														setRoleAddress(
+															event.target.value
+														);
+													}}
+													placeholder="e.g. 0xfdc148069AB770f56b762b508384d515583576a8"
+												/>
+											</div>
+
+											<button
+												type="button"
+												onClick={() => {
+													setWalletRoles([
+														...walletRoles,
+														{
+															name: walletRoleName,
+															address:
+																roleAddress,
+														},
+													]);
+													setRoleAddress("");
+												}}
+												className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+											>
+												Add Wallet Role
+											</button>
+
+											<div className="pt-8 flex flex-col justify-start items-start">
+												{walletRoles.map(
+													(
+														role: any,
+														index: number
+													) => (
+														<div
+															key={index}
+															className="flex flex-row justify-start items-center"
+														>
+															{role.name} -{" "}
+															{role.address}
+														</div>
+													)
+												)}
+											</div>
+										</>
+									)}
+
+									<div className="pt-8 w-full flex justify-between">
+										<button
+											type="button"
+											onClick={() =>
+												setCurrentStep(currentStep - 1)
+											}
+											className="px-12 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base font-bold"
+										>
+											Back
+										</button>
+
+										{walletRoles &&
+										walletRoles.length > 0 ? (
+											<button
+												type="button"
+												onClick={() =>
+													setCurrentStep(
+														currentStep + 1
+													)
+												}
+												className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+											>
+												Next
+											</button>
+										) : (
+											<button
+												type="button"
+												onClick={() => {}}
+												className="px-12 py-2 bg-gray-700 rounded-full text-base font-bold"
+											>
+												Add atleast one role to proceed
+											</button>
+										)}
 									</div>
 								</>
 							)}
@@ -471,7 +604,7 @@ const Index = () => {
 																	src={URL.createObjectURL(
 																		nftImage
 																	)}
-																	className="max-w-[8rem] max-h-[8rem] bg-black rounded-3xl"
+																	className="max-w-[16rem] max-h-[16rem] bg-black rounded-3xl"
 																/>
 																<button
 																	type="button"
@@ -587,6 +720,49 @@ const Index = () => {
 															}}
 															placeholder="e.g. 0.5"
 														/>
+													</div>
+
+													<div className="pt-8 w-full flex justify-between">
+														<button
+															type="button"
+															onClick={() =>
+																setCurrentStep(
+																	currentStep -
+																		1
+																)
+															}
+															className="px-12 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base font-bold"
+														>
+															Back
+														</button>
+
+														{nftImage &&
+														nftName &&
+														nftDescription &&
+														nftQuantity &&
+														nftPrice ? (
+															<button
+																type="button"
+																onClick={() =>
+																	setCurrentStep(
+																		currentStep +
+																			1
+																	)
+																}
+																className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+															>
+																Next
+															</button>
+														) : (
+															<button
+																type="button"
+																onClick={() => {}}
+																className="px-12 py-2 bg-gray-700 rounded-full text-base font-bold"
+															>
+																All fields are
+																required
+															</button>
+														)}
 													</div>
 												</div>
 											)}
@@ -992,30 +1168,6 @@ const Index = () => {
 											</>
 										)}
 								</>
-							)}
-
-							{currentStep > 1 && (
-								<div className="w-full flex justify-between">
-									<button
-										type="button"
-										onClick={() =>
-											setCurrentStep(currentStep - 1)
-										}
-										className="mt-8 px-12 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base font-bold"
-									>
-										Back
-									</button>
-
-									<button
-										type="button"
-										onClick={() =>
-											setCurrentStep(currentStep + 1)
-										}
-										className="mt-8 px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
-									>
-										Next
-									</button>
-								</div>
 							)}
 						</div>
 					</div>

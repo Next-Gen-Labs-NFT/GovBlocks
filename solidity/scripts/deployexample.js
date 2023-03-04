@@ -43,7 +43,12 @@ async function deployDiamond() {
       "ipfs://bafkreiciujrwcjqhyhnn45jdvahwob7nsh3yroyjnlpgz7wnyz4gi6fpgm",
       ethers.BigNumber.from("0"),
       membershipContract.address,
-      ethers.utils.parseEther("0.1"),
+      ethers.utils.parseEther("0.01"),
+      259200000,
+      1,
+      1,
+      1,
+      1,
     ],
   ];
   await diamondInit.deployed();

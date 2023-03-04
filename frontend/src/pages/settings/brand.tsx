@@ -57,13 +57,13 @@ const Settings = () => {
 	}, []);
 
 	const updateBrand = async () => {
-		const calldatas = await getBrandCalldatas(name);
+		const calldatas = await getBrandCalldatas(name, description);
 
 		createProposalWithInstructions(
 			signer,
 			{
 				name: "Branding update",
-				description: `The following branding parameters will be updated:<br /><br />Brand Name: ${name}`,
+				description: `The following branding parameters will be updated:<br /><br />Name: ${name}<br /><br />Description: ${description}`,
 			},
 			calldatas
 		);

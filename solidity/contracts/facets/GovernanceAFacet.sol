@@ -215,6 +215,16 @@ contract GovernanceAFacet is Modifiers {
         s.votingStreakMultiplier = _votingStreakMultiplier;
     }
 
+    function getVotingPower(address _voter) public view returns (uint256) {
+        uint256 voteCount = 0;
+        for (uint256 i = 0; i < s.membershipCount; i++) {
+            address membershipAddress = s.memberships[i];
+            voteCount += IERC721(membershipAddress).balanceOf(_voter);
+        }
+
+        return voteCount;
+    }
+
     // this function is for demonstration purposes only and should be removed for production
     function endVotingTest(uint256 _proposalId) public {
         s.proposals[_proposalId].endBlockTimestamp = block.timestamp;
@@ -264,12 +274,8 @@ contract GovernanceAFacet is Modifiers {
         // Ensure voter has not already voted
         require(!receipt.hasVoted, "GovernanceFacet: voter already voted.");
 
-        uint256 voteCount = 0;
-        for (uint256 i = 0; i < s.membershipCount; i++) {
-            address membershipAddress = s.memberships[i];
-            voteCount += IERC721(membershipAddress).balanceOf(_voter);
-        }
-
+        
+        uint256 voteCount = getVotingPower(_voter);
         require(voteCount > 0, "GovernanceFacet: You don't have any governance tokens");
 
         if (_voteOption == VoteOptions.YES) {
