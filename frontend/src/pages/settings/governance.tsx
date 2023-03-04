@@ -1,19 +1,19 @@
-import { useState } from "react";
 import Link from "next/link";
-
-import { Meta } from "@/layouts/Meta";
-import { DaoMain } from "@/templates/DaoMain";
+import { useState } from "react";
 
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
+import { Meta } from "@/layouts/Meta";
+import { DaoMain } from "@/templates/DaoMain";
 
 const Settings = () => {
-	const [governanceThreshold, setGovernanceThreshold] = useState(0);
-	const [governanceQuorum, setGovernanceQuorum] = useState(0);
-	const [governanceVoteDuration, setGovernanceVoteDuration] = useState(0);
-	const [governanceVoteStreak, setGovernanceVoteStreak] = useState(0);
+	const [governanceThreshold, setGovernanceThreshold] = useState<any>(0);
+	const [governanceQuorum, setGovernanceQuorum] = useState<any>(0);
+	const [governanceVoteDuration, setGovernanceVoteDuration] =
+		useState<any>(0);
+	const [governanceVoteStreak, setGovernanceVoteStreak] = useState<any>(0);
 	const [governanceVoteStreakMultiplier, setGovernanceVoteStreakMultiplier] =
-		useState(0);
+		useState<any>(0);
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>

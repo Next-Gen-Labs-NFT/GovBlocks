@@ -1,11 +1,10 @@
-/* eslint-disable tailwindcss/no-custom-classname */
-import type { ReactNode } from "react";
-import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 
-import { Wallet } from "@/components/wallet";
 import { MenuDrop } from "@/components/menu";
+import { Wallet } from "@/components/wallet";
 
 type IMainProps = {
 	meta: ReactNode;
@@ -37,7 +36,7 @@ const Main = (props: IMainProps) => {
 							GovBlocks
 						</Link>
 						<div className="flex flex-row justify-end items-center space-x-2">
-							<Wallet />
+							<Wallet bigView={false} />
 						</div>
 					</div>
 				</header>

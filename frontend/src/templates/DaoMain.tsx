@@ -1,15 +1,13 @@
-/* eslint-disable tailwindcss/no-custom-classname */
-import type { ReactNode } from "react";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { useAccount } from "wagmi";
 
-import { Wallet } from "@/components/wallet";
 import { MenuDrop } from "@/components/menu";
-
-import { getNftStorageURI, getBrandMetadata } from "@/utils/web3";
+import { Wallet } from "@/components/wallet";
+import { getBrandMetadata, getNftStorageURI } from "@/utils/web3";
 
 type IMainProps = {
 	meta: ReactNode;
@@ -21,7 +19,7 @@ const DaoMain = (props: IMainProps) => {
 	const { isConnected } = useAccount();
 	const [value, setValue] = useLocalStorage("brand");
 
-	const [logo, setLogo] = useState(null);
+	const [logo, setLogo] = useState<any>(null);
 
 	useEffect(() => {
 		const isDomain = location.hostname.split(".").length < 3;
@@ -31,8 +29,8 @@ const DaoMain = (props: IMainProps) => {
 		}
 
 		const getInitialData = async () => {
-			if (value) {
-				if ("logo" in value) {
+			if (value && typeof value == "object") {
+				if ("logo" in value && typeof value?.logo == "string") {
 					const logoURI = await getNftStorageURI(value?.logo);
 					setLogo(logoURI);
 				}
@@ -65,7 +63,7 @@ const DaoMain = (props: IMainProps) => {
 							{logo && <img src={logo} />}
 						</Link>
 						<div className="flex flex-row justify-end items-center space-x-2">
-							<Wallet />
+							<Wallet bigView={false} />
 							<MenuDrop />
 						</div>
 					</div>

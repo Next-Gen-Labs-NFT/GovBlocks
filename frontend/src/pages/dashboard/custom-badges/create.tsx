@@ -1,30 +1,27 @@
-import { useState, useEffect } from "react";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { useSigner } from "wagmi";
 
-import { Meta } from "@/layouts/Meta";
-import { DaoMain } from "@/templates/DaoMain";
-
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
-
+import { Meta } from "@/layouts/Meta";
+import { DaoMain } from "@/templates/DaoMain";
 import {
+	createProposal,
+	getBrandMetadata,
 	getBrandName,
 	getBrandURI,
-	getBrandMetadata,
-	createProposal,
 } from "@/utils/web3";
 
 const Create = () => {
 	const { data: signer } = useSigner();
 
-	const [badgeImage, setBadgeImage] = useState(null);
-	const [badgeName, setBadgeName] = useState("");
-	const [badgeDescription, setBadgeDescription] = useState("");
-	const [badgeQuantity, setBadgeQuantity] = useState(0);
-	const [badgeClaimDeadline, setBadgeClaimDeadline] = useState(0);
+	const [badgeImage, setBadgeImage] = useState<any>(null);
+	const [badgeName, setBadgeName] = useState<any>("");
+	const [badgeDescription, setBadgeDescription] = useState<any>("");
+	const [badgeQuantity, setBadgeQuantity] = useState<any>(0);
+	const [badgeClaimDeadline, setBadgeClaimDeadline] = useState<any>(0);
 
 	const onBadgeImageChange = (event: any) => {
 		if (event.target.files && event.target.files[0]) {
@@ -135,8 +132,8 @@ const Create = () => {
 								type="button"
 								onClick={async () => {
 									await createProposal(signer, {
-										name,
-										description,
+										badgeName,
+										badgeDescription,
 									});
 								}}
 								className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"

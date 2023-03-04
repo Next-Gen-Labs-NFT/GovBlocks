@@ -1,18 +1,17 @@
-import { useState } from "react";
 import Link from "next/link";
-
-import { Meta } from "@/layouts/Meta";
-import { DaoMain } from "@/templates/DaoMain";
+import { useState } from "react";
 
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
+import { Meta } from "@/layouts/Meta";
+import { DaoMain } from "@/templates/DaoMain";
 
 const Settings = () => {
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
-	const [url, setUrl] = useState("");
-	const [primaryColor, setPrimaryColor] = useState("");
-	const [logoFile, setLogoFile] = useState(null);
+	const [name, setName] = useState<any>("");
+	const [description, setDescription] = useState<any>("");
+	const [url, setUrl] = useState<any>("");
+	const [primaryColor, setPrimaryColor] = useState<any>("");
+	const [logoFile, setLogoFile] = useState<any>(null);
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>

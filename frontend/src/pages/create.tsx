@@ -1,53 +1,51 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAccount, useSigner } from "wagmi";
 
-import { useAccount } from "wagmi";
-import { useSigner } from "wagmi";
-
-import { Meta } from "@/layouts/Meta";
-import { Main } from "@/templates/Main";
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
 import { Wallet } from "@/components/wallet";
-
+import { Meta } from "@/layouts/Meta";
+import { Main } from "@/templates/Main";
 import { getClassNames } from "@/utils/classnames";
 
 const Index = () => {
 	const { isConnected } = useAccount();
 
-	const [currentStep, setCurrentStep] = useState(0);
+	const [currentStep, setCurrentStep] = useState<any>(0);
 
-	const [membershipModule, setMembershipModule] = useState(null);
-	const [governancePlatform, setGovernancePlatform] = useState(null);
-	const [governanceModule, setGovernanceModule] = useState(null);
+	const [membershipModule, setMembershipModule] = useState<any>(null);
+	const [governancePlatform, setGovernancePlatform] = useState<any>(null);
+	const [governanceModule, setGovernanceModule] = useState<any>(null);
 
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
-	const [url, setUrl] = useState("");
-	const [primaryColor, setPrimaryColor] = useState("");
-	const [logoFile, setLogoFile] = useState(null);
+	const [name, setName] = useState<any>("");
+	const [description, setDescription] = useState<any>("");
+	const [url, setUrl] = useState<any>("");
+	const [primaryColor, setPrimaryColor] = useState<any>("");
+	const [logoFile, setLogoFile] = useState<any>(null);
 
-	const [nftImage, setNftImage] = useState(null);
-	const [nftName, setNftName] = useState("");
-	const [nftDescription, setNftDescription] = useState("");
-	const [nftQuantity, setNftQuantity] = useState(0);
-	const [nftPrice, setNftPrice] = useState(0);
+	const [nftImage, setNftImage] = useState<any>(null);
+	const [nftName, setNftName] = useState<any>("");
+	const [nftDescription, setNftDescription] = useState<any>("");
+	const [nftQuantity, setNftQuantity] = useState<any>(0);
+	const [nftPrice, setNftPrice] = useState<any>(0);
 
-	const [governanceThreshold, setGovernanceThreshold] = useState(0);
-	const [governanceQuorum, setGovernanceQuorum] = useState(0);
-	const [governanceVoteDuration, setGovernanceVoteDuration] = useState(0);
-	const [governanceVoteStreak, setGovernanceVoteStreak] = useState(0);
+	const [governanceThreshold, setGovernanceThreshold] = useState<any>(0);
+	const [governanceQuorum, setGovernanceQuorum] = useState<any>(0);
+	const [governanceVoteDuration, setGovernanceVoteDuration] =
+		useState<any>(0);
+	const [governanceVoteStreak, setGovernanceVoteStreak] = useState<any>(0);
 	const [governanceVoteStreakMultiplier, setGovernanceVoteStreakMultiplier] =
-		useState(0);
+		useState<any>(0);
 	const [governanceNoVoteStreak, setGovernanceNoVoteStreakMultiplier] =
-		useState(0);
+		useState<any>(0);
 	const [
 		governanceNoVoteStreakVotePenalty,
 		setGovernanceNoVoteStreakVotePenalty,
-	] = useState(0);
+	] = useState<any>(0);
 	const [
 		governanceNoVoteStreakMonetaryPenalty,
 		setGovernanceNoVoteStreakMonetaryPenalty,
-	] = useState(0);
+	] = useState<any>(0);
 
 	const { data: signer } = useSigner();
 
@@ -246,7 +244,7 @@ const Index = () => {
 									<div className="">
 										To get started, connect your wallet.
 									</div>
-									<Wallet />
+									<Wallet bigView={false} />
 								</div>
 							)}
 

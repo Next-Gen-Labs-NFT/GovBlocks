@@ -1,21 +1,18 @@
-import { useState, useEffect } from "react";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { useSigner } from "wagmi";
 
-import { Meta } from "@/layouts/Meta";
-import { DaoMain } from "@/templates/DaoMain";
-
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
-
+import { Meta } from "@/layouts/Meta";
+import { DaoMain } from "@/templates/DaoMain";
 import {
+	createProposalWithInstructions,
+	getBrandCalldatas,
+	getBrandMetadata,
 	getBrandName,
 	getBrandURI,
-	getBrandMetadata,
-	getBrandCalldatas,
-	createProposalWithInstructions,
 } from "@/utils/web3";
 
 const Settings = () => {
@@ -23,15 +20,15 @@ const Settings = () => {
 
 	const [value, setValue] = useLocalStorage("brand");
 
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
-	const [url, setUrl] = useState("");
-	const [primaryColor, setPrimaryColor] = useState("");
-	const [logoFile, setLogoFile] = useState(null);
+	const [name, setName] = useState<any>("");
+	const [description, setDescription] = useState<any>("");
+	const [url, setUrl] = useState<any>("");
+	const [primaryColor, setPrimaryColor] = useState<any>("");
+	const [logoFile, setLogoFile] = useState<any>(null);
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			if (value) {
+			if (value && typeof value == "object") {
 				if ("name" in value) {
 					setName(value?.name);
 				}

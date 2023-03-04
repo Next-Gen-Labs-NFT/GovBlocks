@@ -1,21 +1,19 @@
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
+import { useEffect, useState } from "react";
 import { BsPlusCircle } from "react-icons/bs";
-
-import { useSigner, useAccount } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
 import {
 	getIPFSJSONData,
+	getMembershipMaxSupply,
+	getMembershipMintPrice,
+	getMembershipNFTImage,
+	getMembershipTotalSupply,
 	getProposalCount,
 	getProposals,
-	getMembershipNFTImage,
-	getMembershipMintPrice,
-	getMembershipMaxSupply,
-	getMembershipTotalSupply,
 	mintMembership,
 } from "@/utils/web3";
 
@@ -23,14 +21,14 @@ const Dashboard = () => {
 	const { data: signer } = useSigner();
 	const { address } = useAccount();
 
-	const [membershipNftImage, setMembershipNftImage] = useState(null);
-	const [membershipMintPrice, setMembershipMintPrice] = useState(0);
-	const [membershipMaxSupply, setMembershipMaxSupply] = useState(0);
-	const [membershipTotalSupply, setMembershipTotalSupply] = useState(0);
+	const [membershipNftImage, setMembershipNftImage] = useState<any>(null);
+	const [membershipMintPrice, setMembershipMintPrice] = useState<any>(0);
+	const [membershipMaxSupply, setMembershipMaxSupply] = useState<any>(0);
+	const [membershipTotalSupply, setMembershipTotalSupply] = useState<any>(0);
 
-	const [proposalCount, setProposalCount] = useState(0);
-	const [proposals, setProposals] = useState(null);
-	const [proposalsMetadata, setProposalsMetadata] = useState(null);
+	const [proposalCount, setProposalCount] = useState<any>(0);
+	const [proposals, setProposals] = useState<any>(null);
+	const [proposalsMetadata, setProposalsMetadata] = useState<any>(null);
 
 	useEffect(() => {
 		const getInitialData = async () => {
@@ -48,7 +46,7 @@ const Dashboard = () => {
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			let newProposals = await getProposals(proposalCount);
+			const newProposals = await getProposals(proposalCount);
 			console.log(newProposals);
 			for (let i = 0; i < newProposals.length; i++) {
 				const metadata = await getIPFSJSONData(newProposals[i][2]);
@@ -123,12 +121,10 @@ const Dashboard = () => {
 						</div>
 					</Link>
 					{proposals &&
-						proposals.map((proposal, index) => (
+						proposals.map((proposal: any, index: number) => (
 							<Link
-								href={
-									"/dashboard/proposals/" +
-									proposal[0].toNumber()
-								}
+								key={index}
+								href={`/dashboard/proposals/${proposal[0].toNumber()}`}
 								className="p-4 flex flex-col justify-start items-start border border-gray-700 hover:border-gray-500 rounded-3xl"
 							>
 								<div className="font-semibold text-left">
@@ -158,12 +154,10 @@ const Dashboard = () => {
 						</div>
 					</Link>
 					{proposals &&
-						proposals.map((proposal, index) => (
+						proposals.map((proposal: any, index: number) => (
 							<Link
-								href={
-									"/dashboard/proposals/" +
-									proposal[0].toNumber()
-								}
+								key={index}
+								href={`/dashboard/proposals/${proposal[0].toNumber()}`}
 								className="p-4 flex flex-col justify-start items-start border border-gray-700 hover:border-gray-500 rounded-3xl"
 							>
 								<div className="font-semibold text-left">

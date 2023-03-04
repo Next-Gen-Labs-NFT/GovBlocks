@@ -1,28 +1,25 @@
-import { useState, useEffect } from "react";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { useSigner } from "wagmi";
 
-import { Meta } from "@/layouts/Meta";
-import { DaoMain } from "@/templates/DaoMain";
-
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
-
+import { Meta } from "@/layouts/Meta";
+import { DaoMain } from "@/templates/DaoMain";
 import {
+	createProposal,
+	getBrandMetadata,
 	getBrandName,
 	getBrandURI,
-	getBrandMetadata,
-	createProposal,
 } from "@/utils/web3";
 
 const Create = () => {
 	const { data: signer } = useSigner();
 
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
-	const [instructions, setInstructions] = useState("");
+	const [name, setName] = useState<any>("");
+	const [description, setDescription] = useState<any>("");
+	const [instructions, setInstructions] = useState<any>("");
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>

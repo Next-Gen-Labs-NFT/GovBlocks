@@ -1,22 +1,18 @@
-import { useState, useEffect } from "react";
-
 import Link from "next/link";
 import { useRouter } from "next/router";
-
+import { useEffect, useState } from "react";
 import { BsPlus } from "react-icons/bs";
-
 import { useSigner } from "wagmi";
 
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
-
 import {
-	getIPFSJSONData,
-	getProposal,
 	castVote,
 	endVotingTest,
-	getVoteCount,
 	executeProposal,
+	getIPFSJSONData,
+	getProposal,
+	getVoteCount,
 } from "@/utils/web3";
 
 const Proposal = () => {
@@ -24,12 +20,12 @@ const Proposal = () => {
 	const { id } = router.query;
 	const { data: signer } = useSigner();
 
-	const [proposal, setProposal] = useState(null);
-	const [voteCount, setVoteCount] = useState(0);
+	const [proposal, setProposal] = useState<any>(null);
+	const [voteCount, setVoteCount] = useState<any>(0);
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			let newProposal = await getProposal(id);
+			let newProposal = await getProposal(parseInt(id as string));
 
 			const metadata = await getIPFSJSONData(newProposal[2]);
 			newProposal = [...newProposal, metadata];
@@ -42,7 +38,7 @@ const Proposal = () => {
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			setVoteCount(await getVoteCount(id));
+			setVoteCount(await getVoteCount(parseInt(id as string)));
 		};
 
 		getInitialData();
@@ -81,7 +77,11 @@ const Proposal = () => {
 								<button
 									type="button"
 									onClick={() => {
-										castVote(signer, id, 0);
+										castVote(
+											signer,
+											parseInt(id as string),
+											0
+										);
 									}}
 									className="px-6 py-2 flex justify-center items-center bg-green-600 hover:bg-green-700 rounded-full"
 								>
@@ -105,7 +105,10 @@ const Proposal = () => {
 								<button
 									type="button"
 									onClick={() => {
-										executeProposal(signer, id);
+										executeProposal(
+											signer,
+											parseInt(id as string)
+										);
 									}}
 									className="px-6 py-2 flex justify-center items-center bg-green-600 hover:bg-green-700 rounded-full"
 								>
@@ -120,7 +123,10 @@ const Proposal = () => {
 								<button
 									type="button"
 									onClick={() => {
-										endVotingTest(signer, id);
+										endVotingTest(
+											signer,
+											parseInt(id as string)
+										);
 									}}
 									className="px-6 py-2 flex justify-center items-center bg-gray-600 hover:bg-gray-700 rounded-full"
 								>
