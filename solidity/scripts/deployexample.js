@@ -11,7 +11,7 @@ async function deployDiamond() {
   const membershipContract = await MembershipContract.deploy(
     "GovBlocks DAO Contributor",
     "ipfs://bafkreiblslqnsezwf4kur6iwdkcvxpcauvlxmlxrmkuk3hogheqj7jvuwi",
-    1
+    10000
   );
   await membershipContract.deployed();
   console.log("MembershipContract deployed:", membershipContract.address);
@@ -43,12 +43,7 @@ async function deployDiamond() {
       "ipfs://bafkreiciujrwcjqhyhnn45jdvahwob7nsh3yroyjnlpgz7wnyz4gi6fpgm",
       ethers.BigNumber.from("0"),
       membershipContract.address,
-      ethers.utils.parseEther("0.01"),
-      259200000,
-      1,
-      1,
-      1,
-      1
+      ethers.utils.parseEther("0.1"),
     ],
   ];
   await diamondInit.deployed();

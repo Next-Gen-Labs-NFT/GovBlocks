@@ -18,14 +18,14 @@ contract RoleFacet is Modifiers {
         emit RoleCreated(newroleId);
     }
 
-    function grantRole(uint256 _id, address _account) public onlyAdminRoles {
+    function grantRole(uint256 _id, address _account) public onlyOwner {
         require(!hasRole(_id, _account), "Role has already been granted");
         s.roles[_id].members[_account] = true;
 
         emit RoleGranted(_id, _account);
     }
 
-    function revokeRole(uint256 _id, address _account) public onlyAdminRoles {
+    function revokeRole(uint256 _id, address _account) public onlyOwner {
         require(hasRole(_id, _account), "Role has grant doesn't exist");
         s.roles[_id].members[_account] = false;
 

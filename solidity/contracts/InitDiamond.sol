@@ -22,6 +22,7 @@ import {IERC173} from "./shared/interfaces/IERC173.sol";
 contract InitDiamond {
     AppStorage internal s;
     struct Args {
+        string brandName;
         string brandURI;
         string brandMetadataURI;
         MembershipType membershipType;
@@ -45,6 +46,7 @@ contract InitDiamond {
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
 
+        s.brand.name = _args.brandName;
         s.brand.URI = _args.brandURI;
         s.brand.metadataURI = _args.brandMetadataURI;
         s.membershipsMap[_args.membershipContractAddress] = Membership({
