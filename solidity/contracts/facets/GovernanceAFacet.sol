@@ -88,13 +88,25 @@ contract GovernanceAFacet is Modifiers {
 
         uint256 requiredVotes = (_proposal.voteSupport * totalVotes) / 10000;
 
-        require(requiredVotes >= totalVotes, "GovernanceFacet: Insufficient votes for proposal to pass");
+        require(totalVotes >= requiredVotes, "GovernanceFacet: Insufficient votes for proposal to pass");
     }
 
-    event EndsAt(uint256 _end);
+    function getRequiredVotes(uint256 _proposalId) public view returns (uint256) {
+        Proposal storage proposal = s.proposals[_proposalId];
+        uint256 totalVotes = proposal.forVotes + proposal.againstVotes;
+        uint256 requiredVotes = (proposal.voteSupport * totalVotes) / 10000;
+        return requiredVotes;
+    }
 
-    function isVotingFinalized(uint256 _endBlockTimestamp) public returns (bool) {
-        emit EndsAt(_endBlockTimestamp);
+    function getForVotes(uint256 _proposalId) public view returns (uint256) {
+        return s.proposals[_proposalId].forVotes;
+    }
+
+    function getAgainstVotes(uint256 _proposalId) public view returns (uint256) {
+        return s.proposals[_proposalId].againstVotes;
+    }
+
+    function isVotingFinalized(uint256 _endBlockTimestamp) public view returns (bool) {
         return block.timestamp >= _endBlockTimestamp;
     }
 
