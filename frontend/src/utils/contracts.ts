@@ -10,6 +10,7 @@ const abiGovernanceAFacet = require("./abi/GovernanceAFacet.json");
 const abiMembershipContract = require("./abi/MembershipContract.json");
 
 const getContracts = (chain: String) => {
+	console.log(chain);
 	const goerli = {
 		chain: "goerli",
 		chainId: 5,

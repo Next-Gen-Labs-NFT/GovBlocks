@@ -5,7 +5,7 @@ import { getChain } from "@/utils/domains";
 
 const { getSelectors, FacetCutAction } = require("./diamond.js");
 
-let chain = "";
+const chain = getChain();
 const contracts = getContracts(chain);
 const ethersProvider = new ethers.providers.JsonRpcProvider(
 	contracts.rpcUrl,
@@ -16,10 +16,6 @@ enum GovernanceType {
 	VOTE,
 	VOTEPARTICIPATION,
 }
-
-const updateChain = (domain: string) => {
-	chain = getChain(domain);
-};
 
 const getGasTokenSymbol = () => {
 	return contracts.walletConfig.nativeCurrency.symbol;
@@ -578,7 +574,6 @@ const getGovernanceCalldatas = async (
 
 export {
 	getGasTokenSymbol,
-	updateChain,
 	castVote,
 	createProposal,
 	createProposalWithInstructions,
