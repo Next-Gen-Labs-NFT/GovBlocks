@@ -45,7 +45,7 @@ const Settings = () => {
 			setUrl(brandURI);
 
 			const metadata = await getBrandMetadata();
-			console.log(metadata);
+
 			if (metadata) {
 				if ("description" in metadata) {
 					setDescription(metadata?.description);
@@ -140,7 +140,7 @@ const Settings = () => {
 						) : (
 							<button
 								type="button"
-								onClick={() => {}}
+								onClick={() => { }}
 								className="px-8 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default"
 							>
 								All fields are required

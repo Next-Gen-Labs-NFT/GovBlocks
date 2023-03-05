@@ -97,7 +97,7 @@ const getBrandCalldatas = async (name: string, description: string) => {
 	return calldatas;
 };
 
-const getRoles = async () => {};
+const getRoles = async () => { };
 
 const getMembershipMetadata = async () => {
 	const membership = new ethers.Contract(
@@ -215,7 +215,7 @@ const getProposals = async (proposalCount: number) => {
 	);
 
 	const proposals = [];
-	for (let i = 0; i <= proposalCount - 1; i++) {
+	for (let i = 0; i < proposalCount; i++) {
 		const proposal = await governance.getProposal(i);
 		proposals.push(proposal);
 	}

@@ -7,7 +7,7 @@ const Settings = () => {
 	const modules = [
 		{
 			id: "BrandFacet",
-			url: "/settings/community",
+			url: "/settings/the-basics",
 			name: "The Basics",
 			description: "",
 			active: true,
@@ -23,7 +23,7 @@ const Settings = () => {
 		*/
 		{
 			id: "MembershipFacet",
-			url: "/settings/memberships",
+			url: "/settings/token-details",
 			name: "Token Details",
 			description: "",
 			active: true,

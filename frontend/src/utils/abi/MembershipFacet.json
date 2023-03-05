@@ -1,5 +1,24 @@
 [
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_contract",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "MembershipMinted",
+		"type": "event"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",

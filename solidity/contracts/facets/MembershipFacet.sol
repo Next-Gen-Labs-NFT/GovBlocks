@@ -5,12 +5,15 @@ import {Modifiers, MembershipType, Membership} from "../libraries/LibAppStorage.
 import {IERC721} from "../shared/interfaces/IERC721.sol";
 
 contract MembershipFacet is Modifiers {
+    event MembershipMinted(address _contract, address _to);
+
     function mint(address _contract, address _to) public payable returns (uint256) {
         require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         require(msg.value >= s.membershipsMap[_contract].mintPrice, "Insufficient funds sent");
-        return IERC721(_contract).safeMint(_to);
 
-        // TODO: Emit mint event
+        uint256 mintAction = IERC721(_contract).safeMint(_to);
+        emit MembershipMinted(_contract, _to);
+        return mintAction;
     }
 
     function getMembershipCount() public view returns (uint256) {

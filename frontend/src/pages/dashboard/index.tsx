@@ -2,8 +2,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BsPlusCircle } from "react-icons/bs";
-import { useAccount, useSigner } from "wagmi";
-
+import { useAccount, useContractEvent, useSigner } from "wagmi";
+import { getContracts } from "@/utils/contracts";
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
 import {
@@ -21,10 +21,13 @@ import {
 	getVotingPower,
 } from "@/utils/web3";
 
+const contracts = getContracts("mumbai");
+
 const Dashboard = () => {
 	const { data: signer } = useSigner();
 	const { address } = useAccount();
 
+	const [refreshCounter, setRefreshCounter] = useState<any>(0);
 	const [membershipMetadata, setMembershipMetadata] = useState<any>(null);
 	const [membershipMintPrice, setMembershipMintPrice] = useState<any>(0);
 	const [membershipMaxSupply, setMembershipMaxSupply] = useState<any>(0);
@@ -55,7 +58,6 @@ const Dashboard = () => {
 	useEffect(() => {
 		const getInitialData = async () => {
 			const newProposals = await getProposals(proposalCount);
-			console.log(newProposals);
 			for (let i = 0; i < newProposals.length; i++) {
 				const metadata = await getIPFSJSONData(newProposals[i][2]);
 				newProposals[i] = [...newProposals[i], metadata];
@@ -67,7 +69,24 @@ const Dashboard = () => {
 		getInitialData();
 	}, [proposalCount]);
 
-	console.log(proposals);
+	useEffect(() => {
+		const getMembershipCount = async () => {
+			const newMembershipsOwned = await getMembershipNFTs(address)
+
+			setMembershipsOwned(newMembershipsOwned);
+		};
+
+		getMembershipCount();
+	}, [refreshCounter]);
+
+	useContractEvent({
+		address: contracts.diamondAddress as typeof address,
+		abi: contracts.membershipFacetAbi,
+		eventName: 'MembershipMinted',
+		listener() {
+			setRefreshCounter(refreshCounter + 1);
+		},
+	})
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
