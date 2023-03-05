@@ -11,7 +11,7 @@ async function deployDiamond() {
   const membershipContract = await MembershipContract.deploy(
     "GovBlocks DAO Contributor",
     "ipfs://bafkreihtqin3opv4k5qbo47junq4s6aovdvp36izawuuyhukuqmy2rpta4",
-    1
+    100
   );
   await membershipContract.deployed();
   console.log("MembershipContract deployed:", membershipContract.address);
