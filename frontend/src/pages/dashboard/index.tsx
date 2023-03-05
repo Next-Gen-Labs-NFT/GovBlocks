@@ -123,7 +123,7 @@ const Dashboard = () => {
 									<span className="text-3xl">
 										{membershipsOwned}
 									</span>{" "}
-									Membership Tokens
+									Tokens
 								</div>
 								<div className="py-4 flex flex-col items-center">
 									<span className="text-3xl">
