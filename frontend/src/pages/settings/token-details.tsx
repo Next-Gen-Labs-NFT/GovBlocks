@@ -65,8 +65,8 @@ const Settings = () => {
 		createProposalWithInstructions(
 			signer,
 			{
-				name: "Membership update",
-				description: `The following membership parameters will be updated:<br /><br />Total Quantity: ${nftQuantity}<br /><br />Price: ${nftPrice}`,
+				name: "Token Details update",
+				description: `The following token parameters will be updated:<br /><br />Total Quantity: ${nftQuantity}<br /><br />Price: ${nftPrice}`,
 			},
 			calldatas
 		);
@@ -77,7 +77,7 @@ const Settings = () => {
 			<div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
 				<div className="pt-6 pb-4 w-full flex flex-row justify-between items-center">
 					<label className="text-xl font-semibold">
-						Membership Module
+						Token Details
 					</label>
 					<Link
 						href="/settings"

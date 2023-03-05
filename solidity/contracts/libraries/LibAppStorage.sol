@@ -93,12 +93,10 @@ struct AppStorage {
     uint256 roleCount;
     uint256 adminRoles;
     Brand brand;
-    uint256 adminBrand;
     // Membership[] memberships;
     mapping(address => Membership) membershipsMap;
     mapping(uint256 => address) memberships;
     uint256 membershipCount;
-    uint256 adminMemberships;
     mapping(uint256 => Proposal) proposals;
     uint256 proposalCount;
     uint256 quorum;
@@ -143,23 +141,13 @@ contract Modifiers {
         _;
     }
 
-    modifier onlyAdminBrand() {
-        require(s.roles[s.adminBrand].members[msg.sender], "BrandFacet: Must be admin");
-        _;
-    }
-
-    modifier onlyAdminMemberships() {
-        require(s.roles[s.adminMemberships].members[msg.sender], "MembershipFacet: Must be admin");
-        _;
-    }
-
     modifier onlyAdminGovernance() {
         require(s.roles[s.adminGovernance].members[msg.sender], "GovernanceFacet: Must be admin");
         _;
     }
 
-    modifier onlyAdminParticipation() {
-        require(s.roles[s.adminParticipation].members[msg.sender], "ParticipationFacet: Must be admin");
+     modifier onlyAdminParticipation() {
+        require(s.roles[s.adminParticipation].members[msg.sender], "GovernanceFacet: Must be admin");
         _;
     }
 }

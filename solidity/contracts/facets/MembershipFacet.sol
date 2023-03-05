@@ -31,6 +31,11 @@ contract MembershipFacet is Modifiers {
         return (membership.membershipType, membership.contractAddress, membership.mintPrice);
     }
 
+    function getTotalSupply(address _contract) public view returns (uint256) {
+        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
+        return IERC721(_contract).totalSupply();
+    }
+
     function getMaxSupply(address _contract) public view returns (uint256) {
         require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
         return IERC721(_contract).maxSupply();
@@ -46,10 +51,7 @@ contract MembershipFacet is Modifiers {
         return s.membershipsMap[_contract].mintPrice;
     }
 
-    function getTotalSupply(address _contract) public returns (uint256) {
-        require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");
-        return IERC721(_contract).getTotalSupply();
-    }
+    
 
     function setMintPrice(address _contract, uint256 _price) public onlyOwner {
         require(_contract == s.membershipsMap[_contract].contractAddress, "Invalid contract");

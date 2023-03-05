@@ -48,7 +48,7 @@ async function deployDiamond() {
       1,
       1,
       1,
-      1
+      1,
     ],
   ];
   await diamondInit.deployed();
@@ -64,6 +64,7 @@ async function deployDiamond() {
     "RoleFacet",
     "MembershipFacet",
     "GovernanceAFacet",
+    "GovernanceBFacet",
     "ParticipationFacet",
   ];
   const cut = [];
@@ -72,11 +73,13 @@ async function deployDiamond() {
     const facet = await Facet.deploy();
     await facet.deployed();
     console.log(`${FacetName} deployed: ${facet.address}`);
-    cut.push({
-      facetAddress: facet.address,
-      action: FacetCutAction.Add,
-      functionSelectors: getSelectors(facet),
-    });
+    if (FacetName !== "GovernanceBFacet") {
+      cut.push({
+        facetAddress: facet.address,
+        action: FacetCutAction.Add,
+        functionSelectors: getSelectors(facet),
+      });
+    }
   }
 
   // upgrade diamond with facets

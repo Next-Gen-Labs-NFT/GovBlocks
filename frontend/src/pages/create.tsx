@@ -94,7 +94,7 @@ const Index = () => {
 		},
 		{
 			id: 1,
-			name: "Community",
+			name: "The Basics",
 		},
 		{
 			id: 2,
@@ -102,11 +102,11 @@ const Index = () => {
 		},
 		{
 			id: 3,
-			name: "Membership",
+			name: "Token Details",
 		},
 		{
 			id: 4,
-			name: "Governaance",
+			name: "Governance",
 		},
 		/*
 		{
@@ -151,7 +151,7 @@ const Index = () => {
 		},
 		{
 			id: MembershipType.ERC5643,
-			name: "Subscription",
+			name: "Subscriptions",
 			description: "ERC 5643",
 			active: false,
 		},
@@ -172,6 +172,7 @@ const Index = () => {
 	enum GovernanceType {
 		VOTE,
 		VOTEPARTICIPATION,
+		CONSEQUENCES,
 		SNAPSHOT,
 		TALLY,
 	}
@@ -201,9 +202,16 @@ const Index = () => {
 	const govBlocksGovernanceModules = [
 		{
 			id: GovernanceType.VOTEPARTICIPATION,
-			name: "Standard + Participation",
+			name: "Participation & Weighted Voting",
 			description:
-				"Based on NFTs & Tokens, weighted voting using voting streaks and participation tokens",
+				"Reward your best community members with amplified voting power based on how frequently they participate and vote on proposals",
+			active: true,
+		},
+		{
+			id: GovernanceType.CONSEQUENCES,
+			name: "Consequencies",
+			description:
+				"Apply penalties to negligent governance token holders, similar to how the country of Australia mandates voting for their citizens",
 			active: true,
 		},
 	];
@@ -276,7 +284,7 @@ const Index = () => {
 							{currentStep == 0 && (
 								<div className="w-full flex flex-col items-start justify-start space-y-4">
 									<div className="">
-										To get started, connect your wallet.
+										Connect your wallet to get started
 									</div>
 									<Wallet bigView={false} />
 									<div className="w-full flex justify-end">
@@ -296,7 +304,7 @@ const Index = () => {
 							{currentStep == 1 && (
 								<>
 									<label className="pb-2 font-semibold">
-										Community
+										The Basics
 									</label>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label>Name</label>
@@ -569,7 +577,7 @@ const Index = () => {
 								<>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label className="pb-2 font-semibold">
-											Membership
+											Token Details
 										</label>
 
 										<div className="w-full grid grid-cols-4 gap-4">
@@ -665,7 +673,7 @@ const Index = () => {
 												MembershipType.ERC721 && (
 												<div className="pt-8 w-full flex flex-col justify-start items-start space-y-4">
 													<label className="pb-2 font-semibold">
-														Membership NFT Details
+														NFT Details
 													</label>
 
 													<div className="w-full flex flex-col items-start justify-start space-y-2">
@@ -794,7 +802,7 @@ const Index = () => {
 
 													<div className="flex flex-col justify-start items-start">
 														<label className="pt-4 pb-2 font-semibold text-gray-500">
-															Add More Memberships
+															Add More Tokens
 															(Coming soon)
 														</label>
 														<div className="w-full grid grid-cols-4 gap-4">
@@ -1104,41 +1112,75 @@ const Index = () => {
 
 														{governanceModule?.id !=
 															GovernanceType.VOTEPARTICIPATION && (
-															<button
-																type="button"
-																onClick={() => {
-																	setGovernanceModule(
-																		govBlocksGovernanceModules[0]
-																	);
-																}}
-																className={getClassNames(
-																	"p-4 w-full h-32 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
-																	"border-gray-700 hover:border-gray-500"
-																)}
-															>
-																<div
+															<div className="pt-4 w-full flex flex-col justify-start items-start space-y-2">
+																<div className="text-lg font-medium text-left">
+																	Optional
+																	Governance
+																	Modules
+																</div>
+
+																<button
+																	type="button"
+																	onClick={() => {
+																		setGovernanceModule(
+																			govBlocksGovernanceModules[0]
+																		);
+																	}}
 																	className={getClassNames(
-																		"text-white"
+																		"p-4 w-full h-32 flex flex-col justify-start items-start border border-gray-700 rounded-3xl",
+																		"border-gray-700 hover:border-gray-500"
 																	)}
 																>
-																	<div className="text-lg font-semibold text-left">
-																		Add
-																		Module
+																	<div
+																		className={getClassNames(
+																			"text-white"
+																		)}
+																	>
+																		<div className="pt-2 pb-2 text-lg font-semibold text-left">
+																			{
+																				govBlocksGovernanceModules[0]
+																					.name
+																			}
+																		</div>
+																		<div className="text-sm text-left">
+																			{
+																				govBlocksGovernanceModules[0]
+																					.description
+																			}
+																		</div>
 																	</div>
-																	<div className="pt-2 text-sm text-left">
-																		{
-																			govBlocksGovernanceModules[0]
-																				.name
-																		}
-																	</div>
-																	<div className="text-sm text-left">
-																		{
-																			govBlocksGovernanceModules[0]
-																				.description
-																		}
+																</button>
+
+																<div
+																	className={getClassNames(
+																		"p-4 w-full flex flex-col justify-start items-start border border-gray-700 rounded-3xl",
+																		"border-gray-700"
+																	)}
+																>
+																	<div
+																		className={getClassNames(
+																			"text-gray-500"
+																		)}
+																	>
+																		<div className="pt-2 pb-2 text-lg font-semibold text-left">
+																			{
+																				govBlocksGovernanceModules[1]
+																					.name
+																			}
+																		</div>
+																		<div className="text-sm text-left">
+																			{
+																				govBlocksGovernanceModules[1]
+																					.description
+																			}
+																		</div>
+																		<div className="text-xs text-left">
+																			(coming
+																			soon)
+																		</div>
 																	</div>
 																</div>
-															</button>
+															</div>
 														)}
 													</>
 												)}
@@ -1240,6 +1282,36 @@ const Index = () => {
 																			</span>
 																			x
 																		</div>
+																	</div>
+																</div>
+															</div>
+
+															<div
+																className={getClassNames(
+																	"mt-4 p-4 w-full flex flex-col justify-start items-start border border-gray-700 rounded-3xl ",
+																	"border-gray-700"
+																)}
+															>
+																<div
+																	className={getClassNames(
+																		"text-gray-500"
+																	)}
+																>
+																	<div className="pt-2 pb-2 text-lg font-semibold text-left">
+																		{
+																			govBlocksGovernanceModules[1]
+																				.name
+																		}
+																	</div>
+																	<div className="text-sm text-left">
+																		{
+																			govBlocksGovernanceModules[1]
+																				.description
+																		}
+																	</div>
+																	<div className="text-xs text-left">
+																		(coming
+																		soon)
 																	</div>
 																</div>
 															</div>

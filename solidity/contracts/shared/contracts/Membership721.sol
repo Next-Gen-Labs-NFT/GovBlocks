@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract Membership721 is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
+    uint256 public totalSupply;
     uint256 public maxSupply;
     string private _tokenURI;
 
@@ -27,6 +28,7 @@ contract Membership721 is ERC721, ERC721URIStorage, ERC721Burnable, AccessContro
         uint256 tokenId = _tokenIdCounter.current();
         require(tokenId < maxSupply, "Cannot mint additional tokens, maxSupply reached");
         _tokenIdCounter.increment();
+        totalSupply = _tokenIdCounter.current();
         _safeMint(_to, tokenId);
 
         return tokenId;
@@ -34,10 +36,6 @@ contract Membership721 is ERC721, ERC721URIStorage, ERC721Burnable, AccessContro
 
     function setMaxSupply(uint256 _maxSupply) public onlyRole(DEFAULT_ADMIN_ROLE) {
         maxSupply = _maxSupply;
-    }
-
-    function getTotalSupply() public view returns (uint256) {
-        return _tokenIdCounter.current();
     }
 
     // The following functions are overrides required by Solidity.

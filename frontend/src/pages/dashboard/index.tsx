@@ -18,6 +18,7 @@ import {
 	mintMembership,
 	getMembershipNFTs,
 	getMembershipMetadata,
+	getVotingPower,
 } from "@/utils/web3";
 
 const Dashboard = () => {
@@ -33,7 +34,7 @@ const Dashboard = () => {
 	const [proposalCount, setProposalCount] = useState<any>(0);
 	const [proposals, setProposals] = useState<any>(null);
 	const [proposalsMetadata, setProposalsMetadata] = useState<any>(null);
-	const [votingStreak, setUserVotingStreak] = useState<any>(0);
+	const [votingPower, setUserVotingPower] = useState<any>(0);
 
 	useEffect(() => {
 		const getInitialData = async () => {
@@ -42,7 +43,7 @@ const Dashboard = () => {
 			setMembershipMaxSupply(await getMembershipMaxSupply());
 			setMembershipTotalSupply(await getMembershipTotalSupply());
 			setMembershipsOwned(await getMembershipNFTs(address));
-			setUserVotingStreak(await getUserVotingStreak(address));
+			setUserVotingPower(await getVotingPower(address));
 
 			const newProposalCount = await getProposalCount();
 			setProposalCount(newProposalCount);
@@ -66,12 +67,14 @@ const Dashboard = () => {
 		getInitialData();
 	}, [proposalCount]);
 
+	console.log(proposals);
+
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
 			<div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
 				<div className="py-2 w-full">
 					<label className="py-4 text-xl font-semibold">
-						Membership
+						Token Details
 					</label>
 					<div className="flex flex-row justify-between items-center">
 						<div className="relative mt-2 p-4 w-fit h-full flex flex-row justify-start items-start space-x-4 border border-gray-700 rounded-3xl">
@@ -107,7 +110,7 @@ const Dashboard = () => {
 									}}
 									className="px-6 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
 								>
-									Mint Membership
+									Mint Token
 								</button>
 							</div>
 						</div>
@@ -120,11 +123,11 @@ const Dashboard = () => {
 									<span className="text-3xl">
 										{membershipsOwned}
 									</span>{" "}
-									Membership NFTs
+									Membership Tokens
 								</div>
 								<div className="py-4 flex flex-col items-center">
 									<span className="text-3xl">
-										{votingStreak}
+										{votingPower}
 									</span>
 									Voting Power
 								</div>
@@ -170,6 +173,7 @@ const Dashboard = () => {
 							</Link>
 						))}
 				</div>
+				{/*
 				<div className="pt-6 pb-2 w-full">
 					<label className="pt-4 pb-2 text-xl font-semibold">
 						Custom Badges ({proposalCount})
@@ -203,6 +207,7 @@ const Dashboard = () => {
 							</Link>
 						))}
 				</div>
+				*/}
 			</div>
 		</DaoMain>
 	);

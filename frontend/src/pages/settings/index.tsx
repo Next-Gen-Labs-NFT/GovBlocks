@@ -8,10 +8,11 @@ const Settings = () => {
 		{
 			id: "BrandFacet",
 			url: "/settings/community",
-			name: "Community",
-			description: "Community related description",
+			name: "The Basics",
+			description: "",
 			active: true,
 		},
+		/*
 		{
 			id: "RoleFacet",
 			url: "/settings/roles",
@@ -19,18 +20,19 @@ const Settings = () => {
 			description: "Roles related description",
 			active: true,
 		},
+		*/
 		{
 			id: "MembershipFacet",
 			url: "/settings/memberships",
-			name: "Membership",
-			description: "Membership related description",
+			name: "Token Details",
+			description: "",
 			active: true,
 		},
 		{
 			id: "GovernanceFacet",
 			url: "/settings/governance",
 			name: "Governance",
-			description: "Governance related description",
+			description: "",
 			active: true,
 		},
 		/*

@@ -8,11 +8,11 @@ pragma solidity 0.8.7;
 interface IERC721 {
     function safeMint(address _to) external returns (uint256);
 
+    function totalSupply() external view returns (uint256);
+
     function maxSupply() external view returns (uint256);
 
     function setMaxSupply(uint256 _maxSupply) external;
-
-    function getTotalSupply() external returns (uint256);
 
     /// @notice Count all NFTs assigned to an owner
     /// @dev NFTs assigned to the zero address are considered invalid, and this

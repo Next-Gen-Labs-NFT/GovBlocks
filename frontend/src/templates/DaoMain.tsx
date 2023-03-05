@@ -25,7 +25,7 @@ const DaoMain = (props: IMainProps) => {
 		const isDomain = location.hostname.split(".").length < 3;
 
 		if (isDomain) {
-			router.push("/");
+			//router.push("/");
 		}
 
 		const getInitialData = async () => {

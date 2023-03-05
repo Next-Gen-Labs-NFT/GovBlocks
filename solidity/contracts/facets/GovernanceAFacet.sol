@@ -29,13 +29,32 @@ contract GovernanceAFacet is Modifiers {
         ABSTAIN
     }
 
-    function propose(
+    function createProposal(
+        string memory _metadataURI
+    ) external returns (uint256) {
+        return _propose(new address[](0), new uint256[](0), new string[](0), new bytes[](0), _metadataURI);
+    }
+
+    // This function should only be called by governance admin,
+    // but since this is a testnet deployment for the hackthon,
+    // the permission check has been removed
+    function createProposalWithCalldata(
         address[] memory _targets,
         uint256[] memory _values,
         string[] memory _signatures,
         bytes[] memory _calldatas,
         string memory _metadataURI
     ) external returns (uint256) {
+        return _propose(_targets, _values, _signatures, _calldatas, _metadataURI);
+    }
+
+    function _propose(
+        address[] memory _targets,
+        uint256[] memory _values,
+        string[] memory _signatures,
+        bytes[] memory _calldatas,
+        string memory _metadataURI
+    ) internal returns (uint256) {
         require(
             _targets.length == _values.length && _targets.length == _signatures.length && _targets.length == _calldatas.length,
             "GovernanceFacet: proposal function information parity mismatch."
@@ -220,12 +239,6 @@ contract GovernanceAFacet is Modifiers {
         for (uint256 i = 0; i < s.membershipCount; i++) {
             address membershipAddress = s.memberships[i];
             voteCount += IERC721(membershipAddress).balanceOf(_voter);
-        }
-        // get streak
-        // if streak >=
-        uint256 votingStreak = getUserVotingStreak(_voter);
-        if (votingStreak >= s.votingStreak) {
-            voteCount = voteCount * s.votingStreakMultiplier;
         }
 
         return voteCount;

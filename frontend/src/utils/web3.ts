@@ -1,12 +1,21 @@
 import { ethers } from "ethers";
 import { Alchemy } from "alchemy-sdk";
 
+import { getSelectors, FacetCutAction } from "./diamond.js";
 import { getContracts } from "@/utils/contracts";
 
 import { uploadContent } from "./ipfs";
 
 const contracts = getContracts("mumbai");
-const ethersProvider = new ethers.providers.JsonRpcProvider(contracts.rpcUrl);
+const ethersProvider = new ethers.providers.JsonRpcProvider(
+	contracts.rpcUrl,
+	"any"
+);
+
+enum GovernanceType {
+	VOTE,
+	VOTEPARTICIPATION,
+}
 
 const getGasTokenSymbol = () => {
 	return contracts.walletConfig.nativeCurrency.symbol;
@@ -147,7 +156,7 @@ const getMembershipTotalSupply = async () => {
 		ethersProvider
 	);
 
-	const totalSupply = await membership.getMaxSupply(
+	const totalSupply = await membership.getTotalSupply(
 		contracts.membershipAddress
 	);
 	return totalSupply.toNumber();
@@ -208,7 +217,7 @@ const getProposals = async (proposalCount: number) => {
 	);
 
 	const proposals = [];
-	for (let i = 1; i <= proposalCount; i++) {
+	for (let i = 0; i <= proposalCount - 1; i++) {
 		const proposal = await governance.getProposal(i);
 		proposals.push(proposal);
 	}
@@ -248,7 +257,7 @@ const createProposal = async (signer: any, content: any) => {
 
 	const metadataURI = await uploadContent(content);
 	console.log(metadataURI);
-	await governance.propose([], [], [], [], metadataURI);
+	await governance.createProposal(metadataURI);
 };
 
 const createProposalWithInstructions = async (
@@ -276,7 +285,11 @@ const createProposalWithInstructions = async (
 		signatures.push("");
 	}
 
-	await governance.propose(
+	console.log(targets);
+	console.log(values);
+	console.log(signatures);
+
+	await governance.createProposalWithCalldata(
 		targets,
 		values,
 		signatures,
@@ -371,6 +384,17 @@ const getVotingStreakMultiplier = async () => {
 	return votingStreakMultiplier.toNumber();
 };
 
+const getVotingPower = async (address: string) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const votingStreakMultiplier = await governance.getVotingPower(address);
+	return votingStreakMultiplier.toNumber();
+};
+
 const isVotingFinalized = async (proposalId: number) => {
 	const governance = new ethers.Contract(
 		contracts.diamondAddress,
@@ -378,7 +402,8 @@ const isVotingFinalized = async (proposalId: number) => {
 		ethersProvider
 	);
 
-	await governance.isVotingFinalized(proposalId);
+	const isVotingFinalized = await governance.isVotingFinalized(proposalId);
+	return isVotingFinalized;
 };
 
 const executeProposal = async (signer: any, proposalId: number) => {
@@ -399,8 +424,153 @@ const getVoteCount = async (proposalId: number) => {
 	);
 
 	const voteCount = await governance.getTotalVotes(proposalId);
-	console.log(voteCount);
 	return voteCount.toNumber();
+};
+
+const getFacets = async () => {
+	const diamondLoupe = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.diamondLoupeFacetAbi,
+		ethersProvider
+	);
+
+	const facets = await diamondLoupe.facets();
+
+	console.log(facets);
+
+	let current = GovernanceType.VOTE;
+	for (const facet of facets) {
+		console.log(facet);
+		if (facet[0] == contracts.governanceAFacetAddress) {
+			console.log("governance A");
+			current = GovernanceType.VOTE;
+		}
+
+		if (facet[0] == contracts.governanceBFacetAddress) {
+			console.log("governance B");
+			current = GovernanceType.VOTEPARTICIPATION;
+		}
+	}
+
+	return current;
+};
+
+const governanceModuleAddParticipation = async () => {
+	const cut = [];
+
+	const governanceA = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	cut.push({
+		facetAddress: contracts.governanceBFacetAddress,
+		action: FacetCutAction.Replace,
+		functionSelectors: getSelectors(governanceA),
+	});
+
+	const diamondCut = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.diamondCutFacetAbi,
+		ethersProvider
+	);
+
+	console.log(cut);
+
+	const calldatas = [];
+	calldatas.push(
+		diamondCut.interface.encodeFunctionData("diamondCut", [
+			cut,
+			contracts.diamondAddress,
+			[],
+		])
+	);
+
+	console.log(calldatas);
+
+	return calldatas;
+};
+
+const governanceModuleRemoveParticipation = async () => {
+	const cut = [];
+
+	const governanceA = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	cut.push({
+		facetAddress: contracts.governanceAFacetAddress,
+		action: FacetCutAction.Replace,
+		functionSelectors: getSelectors(governanceA),
+	});
+
+	const diamondCut = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.diamondCutFacetAbi,
+		ethersProvider
+	);
+
+	const calldatas = [];
+	calldatas.push(
+		diamondCut.interface.encodeFunctionData("diamondCut", [
+			cut,
+			contracts.diamondAddress,
+			[],
+		])
+	);
+
+	console.log(calldatas);
+
+	return calldatas;
+};
+
+const getGovernanceCalldatas = async (
+	governanceModule: GovernanceType,
+	supportThreshold: number,
+	quorum: number,
+	voteDuration: number,
+	voteStreak: number,
+	voteStreakMultiplier: number
+) => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const calldatas = [];
+	calldatas.push(
+		governance.interface.encodeFunctionData("setVoteSupport", [
+			supportThreshold,
+		])
+	);
+	calldatas.push(
+		governance.interface.encodeFunctionData("setQuorum", [quorum])
+	);
+	calldatas.push(
+		governance.interface.encodeFunctionData("setProposalDuration", [
+			voteDuration,
+		])
+	);
+
+	if (governanceModule == GovernanceType.VOTEPARTICIPATION) {
+		calldatas.push(
+			governance.interface.encodeFunctionData("setVotingStreak", [
+				voteStreak,
+			])
+		);
+		calldatas.push(
+			governance.interface.encodeFunctionData(
+				"setVotingStreakMultiplier",
+				[voteStreakMultiplier]
+			)
+		);
+	}
+
+	return calldatas;
 };
 
 export {
@@ -434,5 +604,10 @@ export {
 	getVotingStreak,
 	getUserVotingStreak,
 	getVotingStreakMultiplier,
+	getVotingPower,
 	isVotingFinalized,
+	getFacets,
+	governanceModuleAddParticipation,
+	governanceModuleRemoveParticipation,
+	getGovernanceCalldatas,
 };

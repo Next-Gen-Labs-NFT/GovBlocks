@@ -62,8 +62,8 @@ const Settings = () => {
 		createProposalWithInstructions(
 			signer,
 			{
-				name: "Community update",
-				description: `The following community parameters will be updated:<br /><br />Name: ${name}<br /><br />Description: ${description}`,
+				name: "The Basics update",
+				description: `The following parameters will be updated:<br /><br />Name: ${name}<br /><br />Description: ${description}`,
 			},
 			calldatas
 		);
@@ -73,9 +73,7 @@ const Settings = () => {
 		<DaoMain meta={<Meta title="" description="" />}>
 			<div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
 				<div className="pt-6 pb-4 w-full flex flex-row justify-between items-center">
-					<label className="text-xl font-semibold">
-						Community Settings
-					</label>
+					<label className="text-xl font-semibold">The Basics</label>
 					<Link
 						href="/settings"
 						className="px-6 py-2 flex justify-center items-center border border-gray-700 hover:border-gray-400 rounded-full"
