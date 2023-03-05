@@ -24,3 +24,15 @@ The deploy script will log the addresses of the deployed contracts to the termin
 Copy the contract addresses to `/frontend/src/utils/contracts.ts` under the network you have deployed to.
 
 Follow instructions from readme to start frontend application.
+
+## Deployments
+
+GovBlocks is deployed on the following urls:
+
+Main Site: https://govblocks.xyz
+
+GovBlocks DAO (our example DAO) is deployed on the following urls:
+
+Polygon Mumbai: https://governance.govblocksdao.xyz/
+Goerli Base: https://governancebase.govblocksdao.xyz/
+BSC Testnet: https://governancebsc.govblocksdao.xyz/
