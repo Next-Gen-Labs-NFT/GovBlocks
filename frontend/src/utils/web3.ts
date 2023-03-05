@@ -1,10 +1,12 @@
 import { ethers } from "ethers";
 import { getContracts } from "@/utils/contracts";
-import { uploadContent } from "./ipfs";
+import { uploadContent } from "@/utils/ipfs";
+import { getChain } from "@/utils/domains";
 
 const { getSelectors, FacetCutAction } = require("./diamond.js");
 
-const contracts = getContracts("mumbai");
+let chain = "";
+const contracts = getContracts(chain);
 const ethersProvider = new ethers.providers.JsonRpcProvider(
 	contracts.rpcUrl,
 	"any"
@@ -14,6 +16,10 @@ enum GovernanceType {
 	VOTE,
 	VOTEPARTICIPATION,
 }
+
+const updateChain = (domain: string) => {
+	chain = getChain(domain);
+};
 
 const getGasTokenSymbol = () => {
 	return contracts.walletConfig.nativeCurrency.symbol;
@@ -97,7 +103,7 @@ const getBrandCalldatas = async (name: string, description: string) => {
 	return calldatas;
 };
 
-const getRoles = async () => { };
+const getRoles = async () => {};
 
 const getMembershipMetadata = async () => {
 	const membership = new ethers.Contract(
@@ -572,6 +578,7 @@ const getGovernanceCalldatas = async (
 
 export {
 	getGasTokenSymbol,
+	updateChain,
 	castVote,
 	createProposal,
 	createProposalWithInstructions,

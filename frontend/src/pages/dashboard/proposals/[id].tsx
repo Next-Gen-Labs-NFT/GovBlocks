@@ -27,21 +27,29 @@ const Proposal = () => {
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			let newProposal = await getProposal(parseInt(id as string));
+			if (id) {
+				let newProposal = await getProposal(parseInt(id as string));
 
-			const metadata = await getIPFSJSONData(newProposal[2]);
-			newProposal = [...newProposal, metadata];
+				if (newProposal) {
+					const metadata = await getIPFSJSONData(newProposal[2]);
+					newProposal = [...newProposal, metadata];
+				}
 
-			setProposal(newProposal);
+				setProposal(newProposal);
+			}
 		};
 
 		getInitialData();
-	}, []);
+	}, [id]);
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			setVoteCount(await getVoteCount(parseInt(id as string)));
-			setVotingFinalized(await isVotingFinalized(parseInt(id as string)));
+			if (id) {
+				setVoteCount(await getVoteCount(parseInt(id as string)));
+				setVotingFinalized(
+					await isVotingFinalized(parseInt(id as string))
+				);
+			}
 		};
 
 		getInitialData();
@@ -145,46 +153,48 @@ const Proposal = () => {
 								</>
 							)}
 						</div>
-						<div className="py-2 w-1/3 flex flex-col justify-start items-end">
-							<div className="p-4 w-full border border-gray-700 font-normal rounded-3xl">
-								<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
-									<span>Total votes</span>
-									<span className="font-semibold text-2xl">
-										{voteCount}
-									</span>
-								</div>
-								<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
-									<span>Yes votes</span>
-									<span className="font-semibold text-2xl">
-										{proposal[7].toNumber()}
-									</span>
-								</div>
-								<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
-									<span>No votes</span>
-									<span className="font-semibold text-2xl">
-										{proposal[8].toNumber()}
-									</span>
-								</div>
-								<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
-									<span>Abstain votes</span>
-									<span className="font-semibold text-2xl">
-										{proposal[9].toNumber()}
-									</span>
-								</div>
-								<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
-									<span>Quorum</span>
-									<span className="font-semibold text-2xl">
-										{proposal[5].toNumber()} votes
-									</span>
-								</div>
-								<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
-									<span>Support</span>
-									<span className="font-semibold text-2xl">
-										{proposal[6].toNumber()}%
-									</span>
+						{proposal && (
+							<div className="py-2 w-1/3 flex flex-col justify-start items-end">
+								<div className="p-4 w-full border border-gray-700 font-normal rounded-3xl">
+									<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
+										<span>Total votes</span>
+										<span className="font-semibold text-2xl">
+											{voteCount}
+										</span>
+									</div>
+									<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
+										<span>Yes votes</span>
+										<span className="font-semibold text-2xl">
+											{proposal[7].toNumber()}
+										</span>
+									</div>
+									<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
+										<span>No votes</span>
+										<span className="font-semibold text-2xl">
+											{proposal[8].toNumber()}
+										</span>
+									</div>
+									<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
+										<span>Abstain votes</span>
+										<span className="font-semibold text-2xl">
+											{proposal[9].toNumber()}
+										</span>
+									</div>
+									<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
+										<span>Quorum</span>
+										<span className="font-semibold text-2xl">
+											{proposal[5].toNumber()} votes
+										</span>
+									</div>
+									<div className="w-full flex flex-row justify-start items-center space-x-4 text-lg text-left">
+										<span>Support</span>
+										<span className="font-semibold text-2xl">
+											{proposal[6].toNumber()}%
+										</span>
+									</div>
 								</div>
 							</div>
-						</div>
+						)}
 					</div>
 				)}
 			</div>

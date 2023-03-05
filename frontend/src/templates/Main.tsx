@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 import { MenuDrop } from "@/components/menu";
 import { Wallet } from "@/components/wallet";
+import { updateChain } from "@/utils/web3";
 
 type IMainProps = {
 	meta: ReactNode;
@@ -15,6 +16,7 @@ const Main = (props: IMainProps) => {
 	const router = useRouter();
 
 	useEffect(() => {
+		updateChain(location.hostname);
 		const isSubdomain = location.hostname.split(".").length > 2;
 
 		if (isSubdomain) {

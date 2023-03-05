@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 
 import { MenuDrop } from "@/components/menu";
 import { Wallet } from "@/components/wallet";
-import { getBrandMetadata, getNftStorageURI } from "@/utils/web3";
+import { updateChain, getBrandMetadata, getNftStorageURI } from "@/utils/web3";
 
 type IMainProps = {
 	meta: ReactNode;
@@ -22,10 +22,12 @@ const DaoMain = (props: IMainProps) => {
 	const [logo, setLogo] = useState<any>(null);
 
 	useEffect(() => {
+		console.log("dao");
+		updateChain(location.hostname);
 		const isDomain = location.hostname.split(".").length < 3;
 
 		if (isDomain) {
-			router.push("/");
+			//router.push("/");
 		}
 
 		const getInitialData = async () => {
