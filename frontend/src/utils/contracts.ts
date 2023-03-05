@@ -14,8 +14,6 @@ const getContracts = (chain: String) => {
 		chainIdHex: "0x5",
 		chainName: "Goerli Testnet",
 		rpcUrl: "https://eth-goerli.g.alchemy.com/v2/CJ0p2QdZRojuoMvpsiQmMKiRojJXSGvP",
-		alchemyApiKey: "CJ0p2QdZRojuoMvpsiQmMKiRojJXSGvP",
-		alchemyNetwork: Network.ETH_GOERLI,
 		explorerUrl: "https://goerli.etherscan.io/",
 		walletConfig: {
 			chainId: "0x5",
@@ -43,8 +41,6 @@ const getContracts = (chain: String) => {
 		chainIdHex: "0x13881",
 		chainName: "Polygon Mumbai Testnet",
 		rpcUrl: "https://polygon-mumbai.g.alchemy.com/v2/5ARhjf605RhTL4Umk6keHUxzUu9yI9jC",
-		alchemyApiKey: "5ARhjf605RhTL4Umk6keHUxzUu9yI9jC",
-		alchemyNetwork: Network.MATIC_MUMBAI,
 		explorerUrl: "https://mumbai.polygonscan.com/",
 		walletConfig: {
 			chainId: "0x13881",
@@ -57,8 +53,8 @@ const getContracts = (chain: String) => {
 			},
 			blockExplorerUrls: ["https://mumbai.polygonscan.com"],
 		},
-		diamondAddress: "0xFADa697214B35360B4dAFe24cfDFbeE91c47aaaF",
-		membershipAddress: "0x03bec545F5723E4F82f9E4f9522c5dea27284417",
+		diamondAddress: "0xc464262A17B0849e7334F228e8dB77952C01abe5",
+		membershipAddress: "0x92B87db61380F33EC59A270EceAbA3Bf8F4f3809",
 		brandFacetAbi: abiBrandFacet,
 		ownershipFacetAbi: abiOwnershipFacet,
 		membershipFacetAbi: abiMembershipFacet,
@@ -72,8 +68,6 @@ const getContracts = (chain: String) => {
 		chainIdHex: "0x14A33",
 		chainName: "Base Goerli Testnet",
 		rpcUrl: "https://wild-virulent-field.base-goerli.discover.quiknode.pro/0a78f06651c877c081a45e6681866ecf05181827",
-		alchemyApiKey: "",
-		alchemyNetwork: "",
 		explorerUrl: "https://goerli.basescan.org/",
 		walletConfig: {
 			chainId: "0x14A33",
@@ -95,6 +89,33 @@ const getContracts = (chain: String) => {
 		governanceAFacetAbi: abiGovernanceAFacet,
 	};
 
+	const bsc = {
+		chain: "Smart Chain - Testnet",
+		chainId: 97,
+		chainIdHex: "0x61",
+		chainName: "Binance Smartchain testnet",
+		rpcUrl: "https://special-long-star.bsc-testnet.discover.quiknode.pro/72407a9fdc8bdfb3a8971c536729631327b81b15/",
+		explorerUrl: "https://mumbai.polygonscan.com/",
+		walletConfig: {
+			chainId: "0x61",
+			chainName: "Binance Smartchain testnet",
+			rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+			nativeCurrency: {
+				name: "tBNB",
+				symbol: "tBNB",
+				decimals: 18,
+			},
+			blockExplorerUrls: ["https://testnet.bscscan.com"],
+		},
+		diamondAddress: "0xe514086c7eA295FDa634B10661A7F6ceCEFD0947",
+		membershipAddress: "0xad25740d6D4Bd503cEa9926a88C2f96Bd5532332",
+		brandFacetAbi: abiBrandFacet,
+		ownershipFacetAbi: abiOwnershipFacet,
+		membershipFacetAbi: abiMembershipFacet,
+		membershipContractAbi: abiMembershipContract,
+		governanceAFacetAbi: abiGovernanceAFacet,
+	};
+
 	switch (chain) {
 		case "goerli":
 			return goerli;
@@ -102,6 +123,8 @@ const getContracts = (chain: String) => {
 			return mumbai;
 		case "baseGoerli":
 			return baseGoerli;
+		case "bsc":
+			return bsc;
 		default:
 			return baseGoerli;
 	}

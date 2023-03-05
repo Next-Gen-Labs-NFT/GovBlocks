@@ -18,6 +18,10 @@ module.exports = {
       url: "https://wild-virulent-field.base-goerli.discover.quiknode.pro/0a78f06651c877c081a45e6681866ecf05181827/",
       accounts: [process.env.PRIVATE_KEY],
     },
+    bsc: {
+      url: "https://special-long-star.bsc-testnet.discover.quiknode.pro/72407a9fdc8bdfb3a8971c536729631327b81b15/",
+      accounts: [process.env.PRIVATE_KEY],
+    },
     local: {
       url: "http://127.0.01:8545",
     },
