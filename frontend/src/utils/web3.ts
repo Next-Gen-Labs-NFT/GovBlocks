@@ -1,10 +1,8 @@
 import { ethers } from "ethers";
-import { Alchemy } from "alchemy-sdk";
-
-import { getSelectors, FacetCutAction } from "./diamond.js";
 import { getContracts } from "@/utils/contracts";
-
 import { uploadContent } from "./ipfs";
+
+const { getSelectors, FacetCutAction } = require("./diamond.js");
 
 const contracts = getContracts("mumbai");
 const ethersProvider = new ethers.providers.JsonRpcProvider(
@@ -402,8 +400,7 @@ const isVotingFinalized = async (proposalId: number) => {
 		ethersProvider
 	);
 
-	const isVotingFinalized = await governance.isVotingFinalized(proposalId);
-	return isVotingFinalized;
+	return await governance.isVotingFinalized(proposalId);
 };
 
 const executeProposal = async (signer: any, proposalId: number) => {

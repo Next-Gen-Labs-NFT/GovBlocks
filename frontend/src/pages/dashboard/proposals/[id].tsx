@@ -41,7 +41,7 @@ const Proposal = () => {
 	useEffect(() => {
 		const getInitialData = async () => {
 			setVoteCount(await getVoteCount(parseInt(id as string)));
-			setVotingFinalized(await isVotingFinalized(id as string));
+			setVotingFinalized(await isVotingFinalized(parseInt(id as string)));
 		};
 
 		getInitialData();

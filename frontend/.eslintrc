@@ -28,8 +28,10 @@
 					"off",
 					{
 						"singleQuote": false,
-						"endOfLine": "auto",
-						"useTabs": false
+						"useTabs": false,
+						"printWidth": 120,
+						"semi": true,
+						"endOfLine": "lf"
 					}
 				],
 				"react/destructuring-assignment": "off", // Vscode doesn't support automatically destructuring, it's a pain to add a new variable
@@ -60,7 +62,11 @@
 				"no-restricted-globals": "off",
 				"no-plusplus": "off",
 				"no-await-in-loop": "off",
-				"no-restricted-syntax": "off"
+				"no-restricted-syntax": "off",
+				"import/extensions": "off",
+				"consistent-return": "off",
+				"no-param-reassign": "off",
+				"no-use-before-define": "off"
 			}
 		}
 	]

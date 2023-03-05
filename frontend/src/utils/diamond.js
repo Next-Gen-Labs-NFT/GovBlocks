@@ -1,7 +1,7 @@
 /* global ethers */
-
+// prettier-ignore
 const FacetCutAction = { Add: 0, Replace: 1, Remove: 2 };
-
+// prettier-ignore
 // get function selectors from ABI
 function getSelectors(contract) {
 	const signatures = Object.keys(contract.interface.functions);
@@ -16,13 +16,13 @@ function getSelectors(contract) {
 	selectors.get = get;
 	return selectors;
 }
-
+// prettier-ignore
 // get function selector from function signature
 function getSelector(func) {
 	const abiInterface = new ethers.utils.Interface([func]);
 	return abiInterface.getSighash(ethers.utils.Fragment.from(func));
 }
-
+// prettier-ignore
 // used with getSelectors to remove selectors from an array of selectors
 // functionNames argument is an array of function signatures
 function remove(functionNames) {
@@ -56,7 +56,7 @@ function get(functionNames) {
 	selectors.get = this.get;
 	return selectors;
 }
-
+// prettier-ignore
 // remove selectors using an array of signatures
 function removeSelectors(selectors, signatures) {
 	const iface = new ethers.utils.Interface(
@@ -66,7 +66,7 @@ function removeSelectors(selectors, signatures) {
 	selectors = selectors.filter((v) => !removeSelectors.includes(v));
 	return selectors;
 }
-
+// prettier-ignore
 // find a particular address position in the return value of diamondLoupeFacet.facets()
 function findAddressPositionInFacets(facetAddress, facets) {
 	for (let i = 0; i < facets.length; i++) {
