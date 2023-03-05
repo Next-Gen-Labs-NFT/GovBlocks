@@ -60,7 +60,7 @@ const DaoMain = (props: IMainProps) => {
 							href="/dashboard"
 							className="text-2xl font-semibold text-primary-200"
 						>
-							{logo && <img src={logo} />}
+							{logo && <img src={logo} className="h-10" />}
 						</Link>
 						<div className="flex flex-row justify-end items-center space-x-2">
 							<Wallet bigView={false} />
