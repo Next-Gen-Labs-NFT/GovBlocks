@@ -69,7 +69,7 @@ const Input = ({
 						: postValue
 						? "px-0 py-2 sm:py-3 "
 						: "px-4 py-3 sm:py-3 rounded-full",
-					"bg-transparent placeholder-gray-400 border-none focus:border-none focus:outline-none focus:placeholder-gray-400 focus:ring-0",
+					"bg-transparent placeholder-gray-700 border-none focus:border-none focus:outline-none focus:placeholder-gray-700 focus:ring-0",
 					className
 				)}
 			/>

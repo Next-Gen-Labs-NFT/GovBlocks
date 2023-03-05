@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import { useAccount, useSigner } from "wagmi";
 
+import { BsPlusCircle } from "react-icons/bs";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
 import { Wallet } from "@/components/wallet";
 import { Meta } from "@/layouts/Meta";
 import { Main } from "@/templates/Main";
+import { CreateDAOModal } from "@/components/modals/createdao";
 import { getClassNames } from "@/utils/classnames";
 
 const Index = () => {
 	const { isConnected } = useAccount();
 
 	const [currentStep, setCurrentStep] = useState<any>(0);
+	const [showSubmitModal, setShowSubmitModal] = useState<any>(false);
 
 	const [membershipModule, setMembershipModule] = useState<any>(null);
 	const [governancePlatform, setGovernancePlatform] = useState<any>(null);
@@ -32,16 +37,18 @@ const Index = () => {
 	const [nftImage, setNftImage] = useState<any>(null);
 	const [nftName, setNftName] = useState<any>("");
 	const [nftDescription, setNftDescription] = useState<any>("");
-	const [nftQuantity, setNftQuantity] = useState<any>(0);
-	const [nftPrice, setNftPrice] = useState<any>(0);
+	const [nftQuantity, setNftQuantity] = useState<any>(10000);
+	const [nftPrice, setNftPrice] = useState<any>(0.1);
 
-	const [governanceThreshold, setGovernanceThreshold] = useState<any>(0);
-	const [governanceQuorum, setGovernanceQuorum] = useState<any>(0);
+	const [governanceThreshold, setGovernanceThreshold] = useState<any>(51);
+	const [governanceQuorum, setGovernanceQuorum] = useState<any>(2500);
 	const [governanceVoteDuration, setGovernanceVoteDuration] =
-		useState<any>(0);
-	const [governanceVoteStreak, setGovernanceVoteStreak] = useState<any>(0);
+		useState<any>(7);
+	const [governanceVoteStreak, setGovernanceVoteStreak] = useState<any>(10);
 	const [governanceVoteStreakMultiplier, setGovernanceVoteStreakMultiplier] =
-		useState<any>(0);
+		useState<any>(3);
+
+	/*
 	const [governanceNoVoteStreak, setGovernanceNoVoteStreakMultiplier] =
 		useState<any>(0);
 	const [
@@ -52,6 +59,11 @@ const Index = () => {
 		governanceNoVoteStreakMonetaryPenalty,
 		setGovernanceNoVoteStreakMonetaryPenalty,
 	] = useState<any>(0);
+  */
+
+	const [badgeName, setBadgeName] = useState<any>("");
+	const [badgeThreshold, setBadgeThreshold] = useState<any>(10);
+	const [badgeVoteMultiplier, setBadgeVoteMultiplier] = useState<any>(2);
 
 	useEffect(() => {
 		if (roles.length == 1) {
@@ -67,7 +79,7 @@ const Index = () => {
 		} else {
 			setCurrentStep(0);
 		}
-	}, [isConnected]);
+	}, [isConnected, currentStep]);
 
 	const onNftImageChange = (event: any) => {
 		if (event.target.files && event.target.files[0]) {
@@ -96,14 +108,17 @@ const Index = () => {
 			id: 4,
 			name: "Governaance",
 		},
+		/*
 		{
 			id: 5,
-			name: "Participation",
+			name: "Badges",
 		},
+		
 		{
-			id: 6,
+			id: 5,
 			name: "Review",
 		},
+		*/
 	];
 
 	enum MembershipType {
@@ -185,12 +200,6 @@ const Index = () => {
 
 	const govBlocksGovernanceModules = [
 		{
-			id: GovernanceType.VOTE,
-			name: "Standard",
-			description: "Based on NFTs & Tokens",
-			active: true,
-		},
-		{
 			id: GovernanceType.VOTEPARTICIPATION,
 			name: "Standard + Participation",
 			description:
@@ -234,16 +243,30 @@ const Index = () => {
 										>
 											<span>{step.id + 1}</span>
 										</div>
-										<span
-											className={getClassNames(
-												"text-base",
-												currentStep >= step.id
-													? "text-white font-medium"
-													: "text-gray-700"
-											)}
-										>
-											{step.name}
-										</span>
+										{currentStep >= step.id ? (
+											<button
+												type="button"
+												onClick={() =>
+													setCurrentStep(step.id)
+												}
+												className={getClassNames(
+													"text-base",
+													currentStep >= step.id
+														? "text-white font-semibold"
+														: "text-gray-700"
+												)}
+											>
+												{step.name}
+											</button>
+										) : (
+											<span
+												className={getClassNames(
+													"text-base text-white font-medium"
+												)}
+											>
+												{step.name}
+											</span>
+										)}
 									</li>
 								))}
 							</ol>
@@ -251,16 +274,30 @@ const Index = () => {
 
 						<div className="p-8 w-3/4 flex flex-col justify-start items-start space-y-4 border border-gray-700 rounded-3xl">
 							{currentStep == 0 && (
-								<div className="flex flex-col items-start justify-start space-y-4">
+								<div className="w-full flex flex-col items-start justify-start space-y-4">
 									<div className="">
 										To get started, connect your wallet.
 									</div>
 									<Wallet bigView={false} />
+									<div className="w-full flex justify-end">
+										<button
+											type="button"
+											onClick={() =>
+												setCurrentStep(currentStep + 1)
+											}
+											className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+										>
+											Next
+										</button>
+									</div>
 								</div>
 							)}
 
 							{currentStep == 1 && (
 								<>
+									<label className="pb-2 font-semibold">
+										Community
+									</label>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label>Name</label>
 
@@ -306,7 +343,6 @@ const Index = () => {
 											onChange={(event: any) => {
 												setUrl(event.target.value);
 											}}
-											placeholder="e.g. citydao.io or governance.citydao.io"
 											preValue="https://"
 										/>
 									</div>
@@ -339,6 +375,9 @@ const Index = () => {
 
 							{currentStep == 2 && (
 								<>
+									<label className="pb-2 font-semibold">
+										Roles
+									</label>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label>Role Name</label>
 										<Input
@@ -415,7 +454,6 @@ const Index = () => {
 															event.target.value
 														);
 													}}
-													placeholder="e.g. 0xfdc148069AB770f56b762b508384d515583576a8"
 												/>
 											</div>
 
@@ -434,10 +472,13 @@ const Index = () => {
 												}}
 												className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
 											>
-												Add Wallet Role
+												Assign Wallet Role
 											</button>
 
 											<div className="pt-8 flex flex-col justify-start items-start">
+												<label className="pb-4">
+													Assigned Roles
+												</label>
 												{walletRoles.map(
 													(
 														role: any,
@@ -445,10 +486,41 @@ const Index = () => {
 													) => (
 														<div
 															key={index}
-															className="flex flex-row justify-start items-center"
+															className="flex flex-row justify-start items-center space-x-4"
 														>
-															{role.name} -{" "}
-															{role.address}
+															<div
+																key={index}
+																className="group py-1 flex flex-row justify-start items-center space-x-4"
+															>
+																<span>
+																	{index + 1}.
+																</span>
+																<span>
+																	{role.name}{" "}
+																	-{" "}
+																	{
+																		role.address
+																	}
+																</span>
+																<button
+																	type="button"
+																	onClick={() => {
+																		const walletRoleToSplice =
+																			[
+																				...walletRoles,
+																			];
+																		walletRoleToSplice.splice(
+																			index,
+																			1
+																		);
+																		setWalletRoles(
+																			walletRoleToSplice
+																		);
+																	}}
+																>
+																	<AiOutlineCloseCircle className="w-6 h-6 text-gray-400 group-hover:text-white" />
+																</button>
+															</div>
 														</div>
 													)
 												)}
@@ -497,7 +569,7 @@ const Index = () => {
 								<>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label className="pb-2 font-semibold">
-											Select membership block
+											Membership
 										</label>
 
 										<div className="w-full grid grid-cols-4 gap-4">
@@ -593,7 +665,7 @@ const Index = () => {
 												MembershipType.ERC721 && (
 												<div className="pt-8 w-full flex flex-col justify-start items-start space-y-4">
 													<label className="pb-2 font-semibold">
-														NFT Details
+														Membership NFT Details
 													</label>
 
 													<div className="w-full flex flex-col items-start justify-start space-y-2">
@@ -696,7 +768,6 @@ const Index = () => {
 																		.value
 																);
 															}}
-															placeholder="e.g. 10,000"
 														/>
 													</div>
 
@@ -718,54 +789,97 @@ const Index = () => {
 																		.value
 																);
 															}}
-															placeholder="e.g. 0.5"
 														/>
 													</div>
 
-													<div className="pt-8 w-full flex justify-between">
-														<button
-															type="button"
-															onClick={() =>
-																setCurrentStep(
-																	currentStep -
-																		1
-																)
-															}
-															className="px-12 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base font-bold"
-														>
-															Back
-														</button>
+													<div className="flex flex-col justify-start items-start">
+														<label className="pt-4 pb-2 font-semibold text-gray-500">
+															Add More Memberships
+															(Coming soon)
+														</label>
+														<div className="w-full grid grid-cols-4 gap-4">
+															{membershipModules.map(
+																(
+																	module,
+																	index
+																) => (
+																	<div
+																		key={
+																			index
+																		}
+																		className={getClassNames(
+																			"p-4 h-32 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
 
-														{nftImage &&
-														nftName &&
-														nftDescription &&
-														nftQuantity &&
-														nftPrice ? (
-															<button
-																type="button"
-																onClick={() =>
-																	setCurrentStep(
-																		currentStep +
-																			1
-																	)
-																}
-																className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
-															>
-																Next
-															</button>
-														) : (
-															<button
-																type="button"
-																onClick={() => {}}
-																className="px-12 py-2 bg-gray-700 rounded-full text-base font-bold"
-															>
-																All fields are
-																required
-															</button>
-														)}
+																			"border-gray-800 cursor-default"
+																		)}
+																	>
+																		<div
+																			className={getClassNames(
+																				"text-gray-500"
+																			)}
+																		>
+																			<div className="text-lg font-semibold text-left">
+																				{
+																					module.name
+																				}
+																			</div>
+																			<div className="text-sm text-left">
+																				{
+																					module.description
+																				}
+																			</div>
+																			{!module.active && (
+																				<div className="text-xxs text-left">
+																					(Coming
+																					soon)
+																				</div>
+																			)}
+																		</div>
+																	</div>
+																)
+															)}
+														</div>
 													</div>
 												</div>
 											)}
+									</div>
+
+									<div className="pt-8 w-full flex justify-between">
+										<button
+											type="button"
+											onClick={() =>
+												setCurrentStep(currentStep - 1)
+											}
+											className="px-12 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base font-bold"
+										>
+											Back
+										</button>
+
+										{nftImage &&
+										nftName &&
+										nftDescription &&
+										nftQuantity &&
+										nftPrice ? (
+											<button
+												type="button"
+												onClick={() =>
+													setCurrentStep(
+														currentStep + 1
+													)
+												}
+												className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+											>
+												Next
+											</button>
+										) : (
+											<button
+												type="button"
+												onClick={() => {}}
+												className="px-12 py-2 bg-gray-700 rounded-full text-base font-bold"
+											>
+												All fields are required
+											</button>
+										)}
 									</div>
 								</>
 							)}
@@ -774,7 +888,7 @@ const Index = () => {
 								<>
 									<div className="w-full flex flex-col items-start justify-start space-y-2">
 										<label className="pb-2 font-semibold">
-											Select governance platform
+											Governance
 										</label>
 
 										<div className="w-full grid grid-cols-3 gap-4">
@@ -826,6 +940,9 @@ const Index = () => {
 																		setGovernancePlatform(
 																			module
 																		);
+																	setGovernanceModule(
+																		module
+																	);
 																}}
 																className={getClassNames(
 																	"p-4 h-32 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
@@ -870,220 +987,159 @@ const Index = () => {
 										governancePlatform?.id ==
 											GovernanceType.VOTE && (
 											<>
-												<div className="w-full flex flex-col items-start justify-start space-y-2">
-													<label className="pb-2 font-semibold">
-														Select governance module
-													</label>
-
-													<div className="w-full grid grid-cols-3 gap-4">
-														{governanceModule ? (
-															<>
-																<div
-																	className={getClassNames(
-																		"p-4 h-42 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
-
-																		"border-gray-700"
-																	)}
-																>
-																	<div className="text-lg font-semibold text-left">
-																		{
-																			governanceModule?.name
-																		}
-																	</div>
-																	<div className="text-sm text-left">
-																		{
-																			governanceModule?.description
-																		}
-																	</div>
-																</div>
-																<button
-																	type="button"
-																	onClick={() =>
-																		setGovernanceModule(
-																			null
-																		)
-																	}
-																	className="p-4 h-42 flex flex-col justify-center items-start text-gray-400 border border-gray-700 hover:border-gray-500 rounded-3xl"
-																>
-																	<div className="text-base font-semibold text-left">
-																		I
-																		changed
-																		my mind
-																	</div>
-																</button>
-															</>
-														) : (
-															<>
-																{govBlocksGovernanceModules.map(
-																	(
-																		module,
-																		index
-																	) => (
-																		<button
-																			key={
-																				index
-																			}
-																			type="button"
-																			onClick={() => {
-																				if (
-																					module.active
-																				)
-																					setGovernanceModule(
-																						module
-																					);
-																			}}
-																			className={getClassNames(
-																				"p-4 h-42 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
-																				module.active
-																					? "border-gray-700 hover:border-gray-500"
-																					: "border-gray-800"
-																			)}
-																		>
-																			<div
-																				className={getClassNames(
-																					module.active
-																						? "text-white"
-																						: "text-gray-500"
-																				)}
-																			>
-																				<div className="text-lg font-semibold text-left">
-																					{
-																						module.name
-																					}
-																				</div>
-																				<div className="text-sm text-left">
-																					{
-																						module.description
-																					}
-																				</div>
-																				{!module.active && (
-																					<div className="text-xxs text-left">
-																						(Coming
-																						soon)
-																					</div>
-																				)}
-																			</div>
-																		</button>
-																	)
-																)}
-															</>
-														)}
-													</div>
-												</div>
-
 												{governanceModule && (
 													<>
-														<label className="pt-4 pb-2 font-semibold">
-															GovBlock governance
-															settings
-														</label>
-														<div className="w-full flex flex-col justify-center items-start space-y-4">
-															<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
-																<label>
-																	Support
-																</label>
+														<div className="p-4 w-full flex flex-col justify-start items-start border border-gray-700 rounded-3xl">
+															<label className="pb-2 font-semibold">
+																Standard Module
+															</label>
+															<div className="w-full flex flex-col justify-center items-start space-y-4">
+																<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+																	<label>
+																		Support
+																	</label>
 
-																<div className="w-full flex flex-row justify-start items-center space-x-4">
-																	<input
-																		type="range"
-																		min="0"
-																		max="100"
-																		value={
-																			governanceThreshold
-																		}
-																		onChange={(
-																			event
-																		) => {
-																			setGovernanceThreshold(
-																				event
-																					.target
-																					.value
-																			);
-																		}}
-																		className="w-1/2 range range-primary bg-gray-700"
-																	/>
-																	<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
-																		<span className="font-semibold">
-																			{
+																	<div className="w-full flex flex-row justify-start items-center space-x-4">
+																		<input
+																			type="range"
+																			min="0"
+																			max="100"
+																			value={
 																				governanceThreshold
 																			}
-																		</span>{" "}
-																		%
+																			onChange={(
+																				event
+																			) => {
+																				setGovernanceThreshold(
+																					event
+																						.target
+																						.value
+																				);
+																			}}
+																			className="w-1/2 range range-primary bg-gray-700"
+																		/>
+																		<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+																			<span className="font-semibold">
+																				{
+																					governanceThreshold
+																				}
+																			</span>{" "}
+																			%
+																		</div>
 																	</div>
 																</div>
-															</div>
 
-															<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
-																<label>
-																	Quorum
-																</label>
+																<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+																	<label>
+																		Quorum
+																	</label>
 
-																<div className="w-full flex flex-row justify-start items-center space-x-4">
-																	<input
-																		type="range"
-																		min="0"
-																		max={nftQuantity.toString()}
-																		value={
-																			governanceQuorum
-																		}
-																		onChange={(
-																			event
-																		) => {
-																			setGovernanceQuorum(
-																				event
-																					.target
-																					.value
-																			);
-																		}}
-																		className="w-1/2 range range-primary bg-gray-700"
-																	/>
-																	<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
-																		<span className="font-semibold">
-																			{
+																	<div className="w-full flex flex-row justify-start items-center space-x-4">
+																		<input
+																			type="range"
+																			min="0"
+																			max={nftQuantity.toString()}
+																			value={
 																				governanceQuorum
 																			}
-																		</span>{" "}
-																		votes
+																			onChange={(
+																				event
+																			) => {
+																				setGovernanceQuorum(
+																					event
+																						.target
+																						.value
+																				);
+																			}}
+																			className="w-1/2 range range-primary bg-gray-700"
+																		/>
+																		<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+																			<span className="font-semibold">
+																				{
+																					governanceQuorum
+																				}
+																			</span>{" "}
+																			votes
+																		</div>
 																	</div>
 																</div>
-															</div>
 
-															<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
-																<label>
-																	Vote
-																	Duration
-																</label>
+																<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+																	<label>
+																		Vote
+																		Duration
+																	</label>
 
-																<div className="w-full flex flex-row justify-start items-center space-x-4">
-																	<input
-																		type="range"
-																		min="0"
-																		max="14"
-																		value={
-																			governanceVoteDuration
-																		}
-																		onChange={(
-																			event
-																		) => {
-																			setGovernanceVoteDuration(
-																				event
-																					.target
-																					.value
-																			);
-																		}}
-																		className="w-1/2 range range-primary bg-gray-700"
-																	/>
-																	<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
-																		<span className="font-semibold">
-																			{
+																	<div className="w-full flex flex-row justify-start items-center space-x-4">
+																		<input
+																			type="range"
+																			min="0"
+																			max="14"
+																			value={
 																				governanceVoteDuration
 																			}
-																		</span>{" "}
-																		days
+																			onChange={(
+																				event
+																			) => {
+																				setGovernanceVoteDuration(
+																					event
+																						.target
+																						.value
+																				);
+																			}}
+																			className="w-1/2 range range-primary bg-gray-700"
+																		/>
+																		<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+																			<span className="font-semibold">
+																				{
+																					governanceVoteDuration
+																				}
+																			</span>{" "}
+																			days
+																		</div>
 																	</div>
 																</div>
 															</div>
 														</div>
+
+														{governanceModule?.id !=
+															GovernanceType.VOTEPARTICIPATION && (
+															<button
+																type="button"
+																onClick={() => {
+																	setGovernanceModule(
+																		govBlocksGovernanceModules[0]
+																	);
+																}}
+																className={getClassNames(
+																	"p-4 w-full h-32 flex flex-col justify-center items-start border border-gray-700 rounded-3xl",
+																	"border-gray-700 hover:border-gray-500"
+																)}
+															>
+																<div
+																	className={getClassNames(
+																		"text-white"
+																	)}
+																>
+																	<div className="text-lg font-semibold text-left">
+																		Add
+																		Module
+																	</div>
+																	<div className="pt-2 text-sm text-left">
+																		{
+																			govBlocksGovernanceModules[0]
+																				.name
+																		}
+																	</div>
+																	<div className="text-sm text-left">
+																		{
+																			govBlocksGovernanceModules[0]
+																				.description
+																		}
+																	</div>
+																</div>
+															</button>
+														)}
 													</>
 												)}
 
@@ -1091,75 +1147,99 @@ const Index = () => {
 													governanceModule?.id ==
 														GovernanceType.VOTEPARTICIPATION && (
 														<>
-															<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
-																<label>
-																	Voting
-																	streak
-																</label>
-
-																<div className="w-full flex flex-row justify-start items-center space-x-4">
-																	<input
-																		type="range"
-																		min="0"
-																		max="10"
-																		value={
-																			governanceVoteStreak
+															<div className="p-4 w-full flex flex-col justify-start items-start border border-gray-700 rounded-3xl">
+																<div className="w-full flex flex-row justify-between items-start">
+																	<label className="font-semibold">
+																		Participation
+																		&
+																		Weighted
+																		Voting
+																		Module
+																	</label>
+																	<button
+																		type="button"
+																		onClick={() =>
+																			setGovernanceModule(
+																				governanceModules[0]
+																			)
 																		}
-																		onChange={(
-																			event
-																		) => {
-																			setGovernanceVoteStreak(
-																				event
-																					.target
-																					.value
-																			);
-																		}}
-																		className="w-1/2 range range-primary bg-gray-700"
-																	/>
-																	<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
-																		<span className="font-semibold">
-																			{
+																		className="px-6 py-2 flex justify-center items-center border border-gray-700 hover:border-gray-400 rounded-full"
+																	>
+																		Remove
+																	</button>
+																</div>
+
+																<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+																	<label>
+																		Voting
+																		streak
+																	</label>
+
+																	<div className="w-full flex flex-row justify-start items-center space-x-4">
+																		<input
+																			type="range"
+																			min="0"
+																			max="10"
+																			value={
 																				governanceVoteStreak
 																			}
-																		</span>{" "}
-																		proposals
+																			onChange={(
+																				event
+																			) => {
+																				setGovernanceVoteStreak(
+																					event
+																						.target
+																						.value
+																				);
+																			}}
+																			className="w-1/2 range range-primary bg-gray-700"
+																		/>
+																		<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+																			<span className="font-semibold">
+																				{
+																					governanceVoteStreak
+																				}
+																			</span>{" "}
+																			proposals
+																		</div>
 																	</div>
 																</div>
-															</div>
 
-															<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
-																<label>
-																	Voting
-																	streak Vote
-																	Multiplier
-																</label>
+																<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+																	<label>
+																		Voting
+																		streak
+																		Vote
+																		Multiplier
+																	</label>
 
-																<div className="w-full flex flex-row justify-start items-center space-x-4">
-																	<input
-																		type="range"
-																		min="1"
-																		max="10"
-																		value={
-																			governanceVoteStreakMultiplier
-																		}
-																		onChange={(
-																			event
-																		) => {
-																			setGovernanceVoteStreakMultiplier(
-																				event
-																					.target
-																					.value
-																			);
-																		}}
-																		className="w-1/2 range range-primary bg-gray-700"
-																	/>
-																	<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
-																		<span className="font-semibold">
-																			{
+																	<div className="w-full flex flex-row justify-start items-center space-x-4">
+																		<input
+																			type="range"
+																			min="1"
+																			max="10"
+																			value={
 																				governanceVoteStreakMultiplier
 																			}
-																		</span>
-																		x
+																			onChange={(
+																				event
+																			) => {
+																				setGovernanceVoteStreakMultiplier(
+																					event
+																						.target
+																						.value
+																				);
+																			}}
+																			className="w-1/2 range range-primary bg-gray-700"
+																		/>
+																		<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+																			<span className="font-semibold">
+																				{
+																					governanceVoteStreakMultiplier
+																				}
+																			</span>
+																			x
+																		</div>
 																	</div>
 																</div>
 															</div>
@@ -1167,11 +1247,128 @@ const Index = () => {
 													)}
 											</>
 										)}
+
+									<div className="pt-8 w-full flex justify-between">
+										<button
+											type="button"
+											onClick={() =>
+												setCurrentStep(currentStep - 1)
+											}
+											className="px-12 py-2 border border-gray-700 hover:border-gray-500 rounded-full text-base font-bold"
+										>
+											Back
+										</button>
+
+										{governanceThreshold &&
+										governanceQuorum &&
+										governanceVoteDuration ? (
+											<button
+												type="button"
+												onClick={() =>
+													setShowSubmitModal(true)
+												}
+												className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+											>
+												Create DAO
+											</button>
+										) : (
+											<button
+												type="button"
+												onClick={() => {}}
+												className="px-12 py-2 bg-gray-700 rounded-full text-base font-bold"
+											>
+												All fields are required
+											</button>
+										)}
+									</div>
 								</>
 							)}
+
+							{/* 
+							currentStep == 5 && (
+								<>
+									<label className="pb-2 font-semibold">
+										Badges
+									</label>
+
+									<div className="w-full flex flex-col items-start justify-start space-y-2">
+										<label>Badge Type Name</label>
+
+										<Input
+											id="name"
+											name="name"
+											outerClassName="w-full"
+											className="w-full bg-transparent text-white focus:outline-none"
+											value={badgeName}
+											onChange={(event: any) => {
+												setBadgeName(
+													event.target.value
+												);
+											}}
+											placeholder="e.g. Townhall"
+										/>
+
+										<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+											<label>Badge Threshold</label>
+
+											<div className="w-full flex flex-row justify-start items-center space-x-4">
+												<input
+													type="range"
+													min="0"
+													max="25"
+													value={badgeThreshold}
+													onChange={(event) => {
+														setBadgeThreshold(
+															event.target.value
+														);
+													}}
+													className="w-1/2 range range-primary bg-gray-700"
+												/>
+												<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+													<span className="font-semibold">
+														{badgeThreshold}
+													</span>{" "}
+													badges
+												</div>
+											</div>
+										</div>
+
+										<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
+											<label>Vote Multiplier</label>
+
+											<div className="w-full flex flex-row justify-start items-center space-x-4">
+												<input
+													type="range"
+													min="0"
+													max="14"
+													value={badgeVoteMultiplier}
+													onChange={(event) => {
+														setBadgeVoteMultiplier(
+															event.target.value
+														);
+													}}
+													className="w-1/2 range range-primary bg-gray-700"
+												/>
+												<div className="px-4 py-2 text-lg text-center border border-gray-700 rounded-full">
+													<span className="font-semibold">
+														{badgeVoteMultiplier}
+													</span>{" "}
+													x
+												</div>
+											</div>
+										</div>
+									</div>
+								</>
+							) 
+							*/}
 						</div>
 					</div>
 				</div>
+
+				<CreateDAOModal
+					open={showSubmitModal}
+					onClose={() => setShowSubmitModal(false)}
+				/>
 			</>
 		</Main>
 	);

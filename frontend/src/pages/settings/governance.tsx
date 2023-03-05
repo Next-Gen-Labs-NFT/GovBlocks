@@ -1,10 +1,18 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
 import { Meta } from "@/layouts/Meta";
 import { DaoMain } from "@/templates/DaoMain";
+
+import {
+	getVoteSupport,
+	getQuorum,
+	getProposalDuration,
+	getVotingStreak,
+	getVotingStreakMultiplier,
+} from "@/utils/web3";
 
 const Settings = () => {
 	const [governanceThreshold, setGovernanceThreshold] = useState<any>(0);
@@ -15,12 +23,26 @@ const Settings = () => {
 	const [governanceVoteStreakMultiplier, setGovernanceVoteStreakMultiplier] =
 		useState<any>(0);
 
+	useEffect(() => {
+		const getInitialData = async () => {
+			setGovernanceThreshold(await getVoteSupport());
+			setGovernanceQuorum(await getQuorum());
+			setGovernanceVoteDuration(await getProposalDuration());
+			setGovernanceVoteStreak(await getVotingStreak());
+			setGovernanceVoteStreakMultiplier(
+				await getVotingStreakMultiplier()
+			);
+		};
+
+		getInitialData();
+	}, []);
+
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
 			<div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
 				<div className="pt-6 pb-4 w-full flex flex-row justify-between items-center">
 					<label className="text-xl font-semibold">
-						Governance Module
+						Governance Settings
 					</label>
 					<Link
 						href="/settings"
@@ -29,7 +51,10 @@ const Settings = () => {
 						Back to settings
 					</Link>
 				</div>
-				<div className="py-2 w-full flex flex-col justify-center items-start space-y-4">
+				<div className="p-4 w-full flex flex-col justify-center items-start space-y-4 border border-gray-700 rounded-3xl">
+					<label className="text-xl font-semibold">
+						Standard Module
+					</label>
 					<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
 						<label>Support</label>
 
@@ -100,6 +125,14 @@ const Settings = () => {
 							</div>
 						</div>
 					</div>
+				</div>
+				<div className="mt-8 p-4 w-full flex flex-col justify-center items-start space-y-4 border border-gray-700 rounded-3xl">
+					<div className="flex flex-row justify-start items-start">
+						<label className="text-xl font-semibold">
+							Participation & Weighted Voting Module
+						</label>
+					</div>
+
 					<div className="py-2 w-full flex flex-col items-start justify-start space-y-1">
 						<label>Voting streak</label>
 

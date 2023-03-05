@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { useSigner } from "wagmi";
@@ -15,11 +16,21 @@ import {
 } from "@/utils/web3";
 
 const Create = () => {
+	const router = useRouter();
 	const { data: signer } = useSigner();
 
 	const [name, setName] = useState<any>("");
 	const [description, setDescription] = useState<any>("");
 	const [instructions, setInstructions] = useState<any>("");
+
+	const onCreateProposal = async () => {
+		await createProposal(signer, {
+			name,
+			description,
+		});
+
+		router.push("/dashboard");
+	};
 
 	return (
 		<DaoMain meta={<Meta title="" description="" />}>
@@ -70,12 +81,7 @@ const Create = () => {
 						{name && description ? (
 							<button
 								type="button"
-								onClick={async () => {
-									await createProposal(signer, {
-										name,
-										description,
-									});
-								}}
+								onClick={onCreateProposal}
 								className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
 							>
 								Submit

@@ -62,8 +62,8 @@ const Settings = () => {
 		createProposalWithInstructions(
 			signer,
 			{
-				name: "Branding update",
-				description: `The following branding parameters will be updated:<br /><br />Name: ${name}<br /><br />Description: ${description}`,
+				name: "Community update",
+				description: `The following community parameters will be updated:<br /><br />Name: ${name}<br /><br />Description: ${description}`,
 			},
 			calldatas
 		);
@@ -74,7 +74,7 @@ const Settings = () => {
 			<div className="mx-auto max-w-screen-lg w-full flex flex-col justify-start items-center grow">
 				<div className="pt-6 pb-4 w-full flex flex-row justify-between items-center">
 					<label className="text-xl font-semibold">
-						Brand Module
+						Community Settings
 					</label>
 					<Link
 						href="/settings"
@@ -126,6 +126,7 @@ const Settings = () => {
 								setUrl(event.target.value);
 							}}
 							preValue="https://"
+							disabled
 						/>
 					</div>
 
@@ -134,15 +135,15 @@ const Settings = () => {
 							<button
 								type="button"
 								onClick={updateBrand}
-								className="px-12 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
+								className="px-8 py-2 bg-primary hover:bg-primary-600 rounded-full text-base font-bold"
 							>
-								Next
+								Propose Change
 							</button>
 						) : (
 							<button
 								type="button"
 								onClick={() => {}}
-								className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default"
+								className="px-8 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default"
 							>
 								All fields are required
 							</button>

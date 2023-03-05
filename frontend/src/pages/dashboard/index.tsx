@@ -11,20 +11,20 @@ import {
 	getIPFSJSONData,
 	getMembershipMaxSupply,
 	getMembershipMintPrice,
-	getMembershipNFTImage,
 	getMembershipTotalSupply,
 	getProposalCount,
 	getProposals,
 	getUserVotingStreak,
 	mintMembership,
 	getMembershipNFTs,
+	getMembershipMetadata,
 } from "@/utils/web3";
 
 const Dashboard = () => {
 	const { data: signer } = useSigner();
 	const { address } = useAccount();
 
-	const [membershipNftImage, setMembershipNftImage] = useState<any>(null);
+	const [membershipMetadata, setMembershipMetadata] = useState<any>(null);
 	const [membershipMintPrice, setMembershipMintPrice] = useState<any>(0);
 	const [membershipMaxSupply, setMembershipMaxSupply] = useState<any>(0);
 	const [membershipTotalSupply, setMembershipTotalSupply] = useState<any>(0);
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			setMembershipNftImage(await getMembershipNFTImage());
+			setMembershipMetadata(await getMembershipMetadata());
 			setMembershipMintPrice(await getMembershipMintPrice());
 			setMembershipMaxSupply(await getMembershipMaxSupply());
 			setMembershipTotalSupply(await getMembershipTotalSupply());
@@ -76,12 +76,13 @@ const Dashboard = () => {
 					<div className="flex flex-row justify-between items-center">
 						<div className="relative mt-2 p-4 w-fit h-full flex flex-row justify-start items-start space-x-4 border border-gray-700 rounded-3xl">
 							<div>
-								{membershipNftImage && (
-									<img
-										src={membershipNftImage}
-										className="max-w-[12rem] max-h-[12rem] rounded-2xl"
-									/>
-								)}
+								{membershipMetadata &&
+									"image" in membershipMetadata && (
+										<img
+											src={membershipMetadata.image}
+											className="max-w-[12rem] max-h-[12rem] rounded-2xl"
+										/>
+									)}
 							</div>
 							<div className="w-[12rem] h-[12rem] flex flex-col justify-center items-center">
 								<div className="">

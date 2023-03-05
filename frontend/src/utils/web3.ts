@@ -69,7 +69,7 @@ const getBrandCalldatas = async (name: string, description: string) => {
 	);
 
 	const brandMetadataURI = await brand.getBrandMetadataURI();
-	let metadataJSON = getIPFSJSONData(brandMetadataURI);
+	const metadataJSON = getIPFSJSONData(brandMetadataURI);
 
 	if (metadataJSON) {
 		if ("name" in metadataJSON) metadataJSON.name = name;
@@ -90,9 +90,9 @@ const getBrandCalldatas = async (name: string, description: string) => {
 	return calldatas;
 };
 
-const getRoles = async () => { };
+const getRoles = async () => {};
 
-const getMembershipNFTImage = async () => {
+const getMembershipMetadata = async () => {
 	const membership = new ethers.Contract(
 		contracts.membershipAddress,
 		contracts.membershipContractAbi,
@@ -102,8 +102,15 @@ const getMembershipNFTImage = async () => {
 	const membershipMetadata = await getIPFSJSONData(
 		await membership.tokenURI(0)
 	);
-	const nftImage = await getNftStorageURI(membershipMetadata.image);
-	return nftImage;
+
+	if (membershipMetadata) {
+		membershipMetadata.image = await getNftStorageURI(
+			membershipMetadata.image
+		);
+		return membershipMetadata;
+	}
+
+	return null;
 };
 
 const getMembershipMintPrice = async () => {
@@ -298,11 +305,49 @@ const endVotingTest = async (signer: any, proposalId: number) => {
 	await governance.endVotingTest(proposalId);
 };
 
-const getVoteSupport = async () => { };
+const getVoteSupport = async () => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
 
-const getQuorum = async () => { };
+	const voteSupport = await governance.getVoteSupport();
+	return voteSupport.toNumber();
+};
 
-const getProposalDuration = async () => { };
+const getQuorum = async () => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const quorum = await governance.getQuorum();
+	return quorum.toNumber();
+};
+
+const getProposalDuration = async () => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const proposalDuration = await governance.getProposalDuration();
+	return proposalDuration.toNumber() / (24 * 60 * 60 * 1000);
+};
+
+const getVotingStreak = async () => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const votingStreak = await governance.getVotingStreak();
+	return votingStreak.toNumber();
+};
 
 const getUserVotingStreak = async (address: string) => {
 	const governance = new ethers.Contract(
@@ -311,10 +356,20 @@ const getUserVotingStreak = async (address: string) => {
 		ethersProvider
 	);
 
-	await governance.getUserVotingStreak(address);
+	const votingStreak = await governance.getUserVotingStreak(address);
+	return votingStreak.toNumber();
 };
 
-const getVotingStreakMultiplier = async () => { };
+const getVotingStreakMultiplier = async () => {
+	const governance = new ethers.Contract(
+		contracts.diamondAddress,
+		contracts.governanceAFacetAbi,
+		ethersProvider
+	);
+
+	const votingStreakMultiplier = await governance.getVotingStreakMultiplier();
+	return votingStreakMultiplier.toNumber();
+};
 
 const isVotingFinalized = async (proposalId: number) => {
 	const governance = new ethers.Contract(
@@ -363,7 +418,7 @@ export {
 	getMembershipCalldatas,
 	getMembershipMaxSupply,
 	getMembershipMintPrice,
-	getMembershipNFTImage,
+	getMembershipMetadata,
 	getMembershipTotalSupply,
 	mintMembership,
 	getMembershipNFTs,
@@ -376,6 +431,8 @@ export {
 	getRoles,
 	getVoteCount,
 	getVoteSupport,
+	getVotingStreak,
 	getUserVotingStreak,
 	getVotingStreakMultiplier,
+	isVotingFinalized,
 };

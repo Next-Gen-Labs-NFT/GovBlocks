@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSigner } from "wagmi";
+import { useLocalStorage } from "react-use";
 
 import { Input } from "@/components/input";
 import { TextArea } from "@/components/input/textarea";
@@ -11,13 +12,15 @@ import {
 	getMembershipCalldatas,
 	getMembershipMaxSupply,
 	getMembershipMintPrice,
-	getMembershipNFTImage,
+	getMembershipMetadata,
 	getMembershipTotalSupply,
 } from "@/utils/web3";
 
 const Settings = () => {
+	const [value, setValue] = useLocalStorage("memberships");
 	const { data: signer } = useSigner();
 
+	const [membershipMetadata, setMembershipMetadata] = useState<any>(null);
 	const [nftImage, setNftImage] = useState<any>(null);
 	const [nftName, setNftName] = useState<any>("");
 	const [nftDescription, setNftDescription] = useState<any>("");
@@ -26,9 +29,31 @@ const Settings = () => {
 
 	useEffect(() => {
 		const getInitialData = async () => {
-			setNftImage(await getMembershipNFTImage());
-			setNftPrice(await getMembershipMintPrice());
-			setNftQuantity(await getMembershipMaxSupply());
+			const metadata = await getMembershipMetadata();
+
+			if (metadata) {
+				if ("image" in metadata) {
+					setNftImage(metadata.image);
+				}
+				if ("name" in metadata) {
+					setNftName(metadata.name);
+				}
+				if ("description" in metadata) {
+					setNftDescription(metadata.description);
+				}
+			}
+
+			metadata.price = await getMembershipMintPrice();
+			metadata.quantity = await getMembershipMaxSupply();
+
+			if ("price" in metadata) {
+				setNftPrice(metadata.price);
+			}
+			if ("quantity" in metadata) {
+				setNftQuantity(metadata.quantity);
+			}
+
+			setValue(metadata);
 		};
 
 		getInitialData();
@@ -62,7 +87,7 @@ const Settings = () => {
 					</Link>
 				</div>
 				<div className="py-2 w-full flex flex-col justify-center items-start space-y-4">
-					<div className="pt-8 w-full flex flex-col justify-start items-start space-y-4">
+					<div className="pt-4 w-full flex flex-col justify-start items-start space-y-6">
 						<div className="w-full flex flex-col items-start justify-start space-y-2">
 							<label>Image</label>
 							{nftImage && (
@@ -77,12 +102,14 @@ const Settings = () => {
 
 						<div className="w-full flex flex-col items-start justify-start space-y-2">
 							<label>Name</label>
-							<div className="">{nftName}</div>
+							<div className="font-semibold">{nftName}</div>
 						</div>
 
 						<div className="w-full flex flex-col items-start justify-start space-y-2">
 							<label>Description</label>
-							<div className="">{nftDescription}</div>
+							<div className="font-semibold">
+								{nftDescription}
+							</div>
 						</div>
 
 						<div className="w-full flex flex-col items-start justify-start space-y-2">
@@ -121,7 +148,7 @@ const Settings = () => {
 					</div>
 
 					<div className="pt-8">
-						<div className="px-12 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default">
+						<div className="px-8 py-2 text-gray-400 bg-gray-700 rounded-full text-base font-bold cursor-default">
 							Add new membership (Coming soon)
 						</div>
 					</div>
